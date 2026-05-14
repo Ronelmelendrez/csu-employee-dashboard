@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiHome, FiUsers, FiBarChart2, FiUpload } from 'react-icons/fi';
+import { FiHome, FiUsers, FiBarChart2 } from 'react-icons/fi';
 import { useAppStore } from '../store/appStore';
 import { clsx } from 'clsx';
 

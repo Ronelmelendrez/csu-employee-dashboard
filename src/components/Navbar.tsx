@@ -1,4 +1,4 @@
-import { FiMenu, FiUpload } from 'react-icons/fi';
+import { FiMenu } from 'react-icons/fi';
 import { useAppStore } from '../store/appStore';
 import { ThemeToggle } from './ui/ThemeToggle';
 import { FileUploader } from './ui/FileUploader';

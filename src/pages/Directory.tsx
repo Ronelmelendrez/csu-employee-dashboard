@@ -5,7 +5,7 @@ import { DataTable } from '../components/ui/DataTable';
 import { EmployeeDrawer } from '../components/ui/EmployeeDrawer';
 import { Employee } from '../types/employee';
 import { Badge } from '../components/ui/Badge';
-import { FiSearch, FiFilter, FiDownload } from 'react-icons/fi';
+import { FiSearch, FiDownload } from 'react-icons/fi';
 import { useAppStore } from '../store/appStore';
 import { exportToCSV } from '../utils/exportCSV';
 import { motion } from 'framer-motion';

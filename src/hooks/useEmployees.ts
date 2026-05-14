@@ -3,7 +3,7 @@ import { useAppStore } from '../store/appStore';
 import { Employee } from '../types/employee';
 
 export const useEmployees = () => {
-  const { employees, setEmployees, setIsLoading } = useAppStore();
+  const { employees, setEmployees } = useAppStore();
   const queryClient = useQueryClient();
 
   const query = useQuery<Employee[]>({

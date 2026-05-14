@@ -69,7 +69,7 @@ export const getUniversityStatistics = (employees: Employee[]) => {
     universityMap[uni] = (universityMap[uni] || 0) + 1;
   });
   return Object.entries(universityMap)
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
     .slice(0, 10);
 };

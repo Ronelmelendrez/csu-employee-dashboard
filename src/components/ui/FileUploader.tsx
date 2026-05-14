@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { FiUpload, FiFile } from 'react-icons/fi';
+import { FiUpload } from 'react-icons/fi';
 import { parseExcelToEmployees } from '../../utils/excelParser';
 import { useEmployees } from '../../hooks/useEmployees';
 import { useAppStore } from '../../store/appStore';

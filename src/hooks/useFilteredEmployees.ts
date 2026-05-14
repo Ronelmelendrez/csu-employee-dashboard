@@ -1,6 +1,5 @@
 import { useMemo, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
-import { Employee } from '../types/employee';
 import { useDebounce } from './useDebounce';
 
 export const useFilteredEmployees = () => {
