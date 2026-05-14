@@ -1,206 +1,147 @@
-import { useState } from 'react';
-import { createColumnHelper } from '@tanstack/react-table';
-import { useFilteredEmployees } from '../hooks/useFilteredEmployees';
-import { DataTable } from '../components/ui/DataTable';
-import { EmployeeDrawer } from '../components/ui/EmployeeDrawer';
-import { Employee } from '../types/employee';
-import { Badge } from '../components/ui/Badge';
-import { FiSearch, FiDownload } from 'react-icons/fi';
-import { useAppStore } from '../store/appStore';
-import { exportToCSV } from '../utils/exportCSV';
-import { motion } from 'framer-motion';
+import { useState, useMemo } from "react";
+import { StatusBadge } from "../components/ui/index";
+import { useDebounce, exportCSV } from "../utils/index";
+import { Employee } from "../types/employee";
 
-const columnHelper = createColumnHelper<Employee>();
+export function DirectoryPage({ employees, onSelectEmployee }: { employees: Employee[]; onSelectEmployee: (emp: Employee) => void }) {
+  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({ employmentStatus: "", officialStation: "", categoryOfEmployment: "", connectedWithCSU: "" });
+  const [page, setPage] = useState(1);
+  const [sortKey, setSortKey] = useState("id");
+  const [sortDir, setSortDir] = useState(1);
+  const PAGE_SIZE = 10;
+  const debouncedSearch = useDebounce(search, 250);
 
-const columns = [
-  columnHelper.accessor('no', { header: 'Employee No.', cell: (info) => info.getValue() }),
-  columnHelper.accessor('currentRank', { header: 'Current Rank' }),
-  columnHelper.accessor('officialStation', { header: 'Official Station' }),
-  columnHelper.accessor('employmentStatus', {
-    header: 'Employment Status',
-    cell: (info) => {
-      const status = info.getValue();
-      let variant: 'success' | 'warning' | 'danger' | 'info' | 'default' = 'default';
-      if (status?.toLowerCase().includes('permanent')) variant = 'success';
-      else if (status?.toLowerCase().includes('contract')) variant = 'warning';
-      else if (status?.toLowerCase().includes('casual')) variant = 'info';
-      return <Badge variant={variant}>{status}</Badge>;
-    },
-  }),
-  columnHelper.accessor('categoryOfEmployment', { header: 'Category' }),
-  columnHelper.accessor('courseProgram', { header: 'Program' }),
-  columnHelper.accessor('fundingSource', { header: 'Funding Source' }),
-  columnHelper.accessor('schoolingStatus', { header: 'Schooling Status' }),
-  columnHelper.accessor('connectedWithCSU', {
-    header: 'Connected',
-    cell: (info) => {
-      const connected = info.getValue();
-      return <Badge variant={connected?.toLowerCase() === 'yes' ? 'success' : 'danger'}>{connected}</Badge>;
-    },
-  }),
-];
+  const statuses = [...new Set(employees.map(e => e.employmentStatus))].filter(Boolean);
+  const stations = [...new Set(employees.map(e => e.officialStation))].filter(Boolean);
+  const categories = [...new Set(employees.map(e => e.categoryOfEmployment))].filter(Boolean);
 
-export const Directory = () => {
-  const filteredEmployees = useFilteredEmployees();
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const { filters, setFilter, resetFilters } = useAppStore();
+  const filtered = useMemo(() => {
+    let d = employees;
+    if (debouncedSearch) {
+      const q = debouncedSearch.toLowerCase();
+      d = d.filter(e => Object.values(e).some(v => String(v).toLowerCase().includes(q)));
+    }
+    if (filters.employmentStatus) d = d.filter(e => e.employmentStatus === filters.employmentStatus);
+    if (filters.officialStation) d = d.filter(e => e.officialStation === filters.officialStation);
+    if (filters.categoryOfEmployment) d = d.filter(e => e.categoryOfEmployment === filters.categoryOfEmployment);
+    if (filters.connectedWithCSU) d = d.filter(e => e.connectedWithCSU === filters.connectedWithCSU);
+    d = [...d].sort((a, b) => {
+      const av = a[sortKey as keyof Employee], bv = b[sortKey as keyof Employee];
+      return typeof av === "number" ? (Number(av) - Number(bv)) * sortDir : String(av).localeCompare(String(bv)) * sortDir;
+    });
+    return d;
+  }, [employees, debouncedSearch, filters, sortKey, sortDir]);
 
-  const handleRowClick = (employee: Employee) => {
-    setSelectedEmployee(employee);
-    setIsDrawerOpen(true);
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const handleSort = (key: string) => {
+    if (sortKey === key) setSortDir(d => -d);
+    else { setSortKey(key); setSortDir(1); }
+    setPage(1);
   };
 
-  const handleExport = () => {
-    exportToCSV(filteredEmployees, 'csu_employees_export');
-  };
+  const setFilter = (k: keyof typeof filters, v: string) => { setFilters(f => ({ ...f, [k]: v })); setPage(1); };
 
-  // Get unique filter options
-  const uniqueValues = {
-    employmentStatus: [...new Set(filteredEmployees.map(e => e.employmentStatus).filter(Boolean))],
-    officialStation: [...new Set(filteredEmployees.map(e => e.officialStation).filter(Boolean))],
-    category: [...new Set(filteredEmployees.map(e => e.categoryOfEmployment).filter(Boolean))],
-    fundingSource: [...new Set(filteredEmployees.map(e => e.fundingSource).filter(Boolean))],
-    schoolingStatus: [...new Set(filteredEmployees.map(e => e.schoolingStatus).filter(Boolean))],
-    connected: [...new Set(filteredEmployees.map(e => e.connectedWithCSU).filter(Boolean))],
-  };
+  const COLS = [
+    { key: "id", label: "#" },
+    { key: "currentRank", label: "Rank" },
+    { key: "officialStation", label: "Station" },
+    { key: "employmentStatus", label: "Status" },
+    { key: "categoryOfEmployment", label: "Category" },
+    { key: "courseProgram", label: "Program" },
+    { key: "schoolingStatus", label: "Schooling" },
+    { key: "connectedWithCSU", label: "Connected" },
+  ];
+
+  const selStyle = { background: "var(--bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "7px 10px", fontSize: 12, color: "var(--text)", cursor: "pointer" } as React.CSSProperties;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6"
-    >
-      <div className="flex justify-between items-center">
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <h1 className="section-title text-4xl">Employee Directory</h1>
-          <p className="text-slate-600 dark:text-slate-300 mt-2 text-lg">View and search employee records</p>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", margin: 0 }}>Employee Directory</h1>
+          <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{filtered.length} employees found</p>
         </div>
-        <button
-          onClick={handleExport}
-          className="btn-primary flex items-center gap-2"
-        >
-          <FiDownload size={18} />
-          Export CSV
-        </button>
+        <button onClick={() => exportCSV(filtered)} style={{ background: "#10b981", color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>↓ Export CSV</button>
       </div>
 
-      {/* Filters Bar */}
-      <div className="card p-6 space-y-4">
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex-1 min-w-[200px] relative">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Global search..."
-              value={filters.searchTerm}
-              onChange={(e) => setFilter('searchTerm', e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            />
+      <div style={{ background: "var(--card)", borderRadius: 14, padding: 16, marginBottom: 16, border: "1px solid var(--border)" }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="🔍  Search all columns…" style={{ flex: "1 1 200px", ...selStyle, minWidth: 180 }} />
+          <select value={filters.employmentStatus} onChange={e => setFilter("employmentStatus", e.target.value)} style={selStyle}>
+            <option value="">All Status</option>
+            {statuses.map(s => <option key={s}>{s}</option>)}
+          </select>
+          <select value={filters.officialStation} onChange={e => setFilter("officialStation", e.target.value)} style={selStyle}>
+            <option value="">All Stations</option>
+            {stations.map(s => <option key={s}>{s}</option>)}
+          </select>
+          <select value={filters.categoryOfEmployment} onChange={e => setFilter("categoryOfEmployment", e.target.value)} style={selStyle}>
+            <option value="">All Categories</option>
+            {categories.map(s => <option key={s}>{s}</option>)}
+          </select>
+          <select value={filters.connectedWithCSU} onChange={e => setFilter("connectedWithCSU", e.target.value)} style={selStyle}>
+            <option value="">All Connected</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+      </div>
+
+      <div style={{ background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ borderBottom: "2px solid var(--border)" }}>
+                {COLS.map(col => (
+                  <th key={col.key} onClick={() => handleSort(col.key)} style={{ padding: "12px 14px", textAlign: "left", fontWeight: 700, color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.6, cursor: "pointer", whiteSpace: "nowrap", userSelect: "none", background: "var(--card)" }}>
+                    {col.label} {sortKey === col.key ? (sortDir === 1 ? "↑" : "↓") : ""}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {paged.length === 0 && (
+                <tr><td colSpan={COLS.length} style={{ padding: "40px", textAlign: "center", color: "var(--muted)" }}>No employees match your filters.</td></tr>
+              )}
+              {paged.map((emp, i) => (
+                <tr key={emp.id} onClick={() => onSelectEmployee(emp)}
+                  style={{ borderBottom: "1px solid var(--border)", cursor: "pointer", background: i % 2 === 0 ? "transparent" : "var(--bg)", transition: "background 0.12s" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "var(--hover)"}
+                  onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? "transparent" : "var(--bg)"}
+                >
+                  <td style={{ padding: "10px 14px", color: "var(--muted)", fontWeight: 600 }}>{emp.id}</td>
+                  <td style={{ padding: "10px 14px", color: "var(--text)", fontWeight: 500 }}>{emp.currentRank}</td>
+                  <td style={{ padding: "10px 14px", color: "var(--text)" }}>{emp.officialStation}</td>
+                  <td style={{ padding: "10px 14px" }}><StatusBadge status={emp.employmentStatus} small /></td>
+                  <td style={{ padding: "10px 14px", color: "var(--text)" }}>{emp.categoryOfEmployment}</td>
+                  <td style={{ padding: "10px 14px", color: "var(--muted)" }}>{emp.courseProgram}</td>
+                  <td style={{ padding: "10px 14px", color: "var(--muted)" }}>{emp.schoolingStatus}</td>
+                  <td style={{ padding: "10px 14px" }}>
+                    <span style={{ color: emp.connectedWithCSU === "Yes" ? "#10b981" : "#ef4444", fontWeight: 700 }}>{emp.connectedWithCSU === "Yes" ? "✓" : "✗"}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {totalPages > 1 && (
+          <div style={{ padding: "12px 16px", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Page {page} of {totalPages} · {filtered.length} results</span>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ ...selStyle, opacity: page === 1 ? 0.4 : 1 }}>← Prev</button>
+              {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                const p = totalPages <= 7 ? i + 1 : i === 0 ? 1 : i === 6 ? totalPages : page - 3 + i;
+                return <button key={p} onClick={() => setPage(p)} style={{ ...selStyle, background: p === page ? "#10b981" : "var(--bg)", color: p === page ? "#fff" : "var(--text)", fontWeight: p === page ? 700 : 400 }}>{p}</button>;
+              })}
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ ...selStyle, opacity: page === totalPages ? 0.4 : 1 }}>Next →</button>
+            </div>
           </div>
-          <button
-            onClick={resetFilters}
-            className="btn-secondary"
-          >
-            Clear Filters
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <select
-            multiple
-            value={filters.employmentStatus}
-            onChange={(e) => setFilter('employmentStatus', Array.from(e.target.selectedOptions, opt => opt.value))}
-            className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            size={3}
-          >
-            <option value="" disabled>Employment Status</option>
-            {uniqueValues.employmentStatus.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-
-          <select
-            multiple
-            value={filters.officialStation}
-            onChange={(e) => setFilter('officialStation', Array.from(e.target.selectedOptions, opt => opt.value))}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
-            size={3}
-          >
-            <option value="" disabled>Official Station</option>
-            {uniqueValues.officialStation.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-
-          <select
-            multiple
-            value={filters.category}
-            onChange={(e) => setFilter('category', Array.from(e.target.selectedOptions, opt => opt.value))}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
-            size={3}
-          >
-            <option value="" disabled>Category</option>
-            {uniqueValues.category.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-
-          <select
-            multiple
-            value={filters.fundingSource}
-            onChange={(e) => setFilter('fundingSource', Array.from(e.target.selectedOptions, opt => opt.value))}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
-            size={3}
-          >
-            <option value="" disabled>Funding Source</option>
-            {uniqueValues.fundingSource.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-
-          <select
-            multiple
-            value={filters.schoolingStatus}
-            onChange={(e) => setFilter('schoolingStatus', Array.from(e.target.selectedOptions, opt => opt.value))}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
-            size={3}
-          >
-            <option value="" disabled>Schooling Status</option>
-            {uniqueValues.schoolingStatus.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-
-          <select
-            multiple
-            value={filters.connected}
-            onChange={(e) => setFilter('connected', Array.from(e.target.selectedOptions, opt => opt.value))}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
-            size={3}
-          >
-            <option value="" disabled>Connected with CSU</option>
-            {uniqueValues.connected.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
-        </div>
+        )}
       </div>
-
-      {/* Data Table */}
-      <DataTable
-        columns={columns}
-        data={filteredEmployees}
-        onRowClick={handleRowClick}
-      />
-
-      {/* Employee Detail Drawer */}
-      <EmployeeDrawer
-        employee={selectedEmployee}
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-      />
-    </motion.div>
+    </div>
   );
-};
+}

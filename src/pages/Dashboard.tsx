@@ -1,55 +1,103 @@
-import { useFilteredEmployees } from '../hooks/useFilteredEmployees';
-import { computeStats, getEmploymentStatusDistribution, getGraduationTrends } from '../utils/analyticsHelpers';
-import { StatCard } from '../components/ui/StatCard';
-import { PieChartCard } from '../components/charts/PieChartCard';
-import { BarChartCard } from '../components/charts/BarChartCard';
-import { LineChartCard } from '../components/charts/LineChartCard';
-import { FiUsers, FiUserCheck, FiUserX, FiUserPlus, FiMapPin, FiAward } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area } from 'recharts';
+import { ChartCard, SummaryCard } from '../components/ui/index';
+import { groupBy, toChartData, CHART_PALETTE } from '../utils/index';
+import { Employee } from '../types/employee';
 
-export const Dashboard = () => {
-  const employees = useFilteredEmployees();
-  const stats = computeStats(employees);
-  const statusDistribution = getEmploymentStatusDistribution(employees);
-  const graduationTrends = getGraduationTrends(employees);
+export function DashboardPage({ employees }: { employees: Employee[] }) {
+  const total = employees.length;
+  const permanent = employees.filter(e => e.employmentStatus === "Permanent").length;
+  const contractual = employees.filter(e => ["Contractual", "COS", "Job Order", "Casual"].includes(e.employmentStatus)).length;
+  const connected = employees.filter(e => e.connectedWithCSU === "Yes").length;
 
-  // Prepare station data (top 5)
-  const stationData = Object.entries(stats.byStation)
-    .map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 5);
+  const statusData = toChartData(groupBy(employees, "employmentStatus"));
+  const stationData = toChartData(groupBy(employees, "officialStation")).slice(0, 8);
+  const categoryData = toChartData(groupBy(employees, "categoryOfEmployment"));
+
+  // graduation year trend
+  const gradYears: Record<string, number> = {};
+  employees.forEach(e => {
+    if (e.graduationDate) {
+      const yr = String(e.graduationDate).slice(0, 4);
+      if (yr.match(/^\d{4}$/) && Number(yr) > 1990 && Number(yr) <= 2026) {
+        gradYears[yr] = (gradYears[yr] || 0) + 1;
+      }
+    }
+  });
+  const gradTrend = Object.entries(gradYears).sort((a, b) => Number(a[0]) - Number(b[0])).map(([year, count]) => ({ year, count }));
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6"
-    >
-      <div>
-        <h1 className="section-title text-4xl">Dashboard Overview</h1>
-        <p className="text-slate-600 dark:text-slate-300 mt-2 text-lg">Welcome to Caraga State University Employee Dashboard</p>
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", margin: 0 }}>Dashboard Overview</h1>
+        <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>Caraga State University · Employee Analytics</p>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <StatCard title="Total Employees" value={stats.total} icon={<FiUsers size={24} />} trend={2.5} />
-        <StatCard title="Active Employees" value={stats.active} icon={<FiUserCheck size={24} />} trend={1.8} />
-        <StatCard title="Contractual" value={stats.contractual} icon={<FiUserX size={24} />} trend={-0.5} />
-        <StatCard title="Permanent" value={stats.permanent} icon={<FiUserPlus size={24} />} trend={3.2} />
-        <StatCard title="Connected with CSU" value={stats.connected} icon={<FiMapPin size={24} />} />
-        <StatCard title="Official Stations" value={Object.keys(stats.byStation).length} icon={<FiAward size={24} />} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
+        <SummaryCard label="Total Employees" value={total} icon="👥" color="#6366f1" />
+        <SummaryCard label="Permanent" value={permanent} icon="✅" color="#10b981" sub={`${((permanent / total) * 100 || 0).toFixed(1)}% of total`} />
+        <SummaryCard label="Contractual / COS" value={contractual} icon="📋" color="#f59e0b" sub={`${((contractual / total) * 100 || 0).toFixed(1)}% of total`} />
+        <SummaryCard label="Connected with CSU" value={connected} icon="🏫" color="#0ea5e9" sub={`${((connected / total) * 100 || 0).toFixed(1)}% of total`} />
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PieChartCard title="Employment Status Distribution" data={statusDistribution} />
-        <BarChartCard title="Top Official Stations" data={stationData} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16, marginBottom: 16 }}>
+        <ChartCard title="Employment Status Distribution">
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie data={statusData} cx="50%" cy="50%" outerRadius={75} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={11}>
+                {statusData.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Employees by Official Station">
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={stationData} margin={{ left: -10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="name" fontSize={10} tick={{ fill: "var(--muted)" }} />
+              <YAxis fontSize={10} tick={{ fill: "var(--muted)" }} />
+              <Tooltip />
+              <Bar dataKey="value" fill="#6366f1" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <LineChartCard title="Graduation Trends Over Years" data={graduationTrends} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
+        <ChartCard title="Category of Employment">
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" label={({ name, value }) => `${name}: ${value}`} fontSize={11}>
+                {categoryData.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Graduation Year Trend">
+          {gradTrend.length > 0 ? (
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={gradTrend} margin={{ left: -10 }}>
+                <defs>
+                  <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="year" fontSize={10} tick={{ fill: "var(--muted)" }} />
+                <YAxis fontSize={10} tick={{ fill: "var(--muted)" }} />
+                <Tooltip />
+                <Area type="monotone" dataKey="count" stroke="#10b981" fill="url(#grad)" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--muted)", fontSize: 13 }}>No graduation date data</div>
+          )}
+        </ChartCard>
       </div>
-    </motion.div>
+    </div>
   );
-};
+}

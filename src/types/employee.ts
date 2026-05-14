@@ -1,6 +1,6 @@
 export interface Employee {
   id: number;
-  no: string | number;
+  no?: string | number;
   currentRank: string;
   officialStation: string;
   categoryOfEmployment: string;
