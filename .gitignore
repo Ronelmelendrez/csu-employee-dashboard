@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Build artifacts
+dist/
+build/
+.turbo/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.vim/
+
+# OS-specific files
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Runtime data
+*.pid
+*.seed
+
+# Vite
+.vite
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# IDE - VS Code specific extensions
+.vscode/extensions.json
