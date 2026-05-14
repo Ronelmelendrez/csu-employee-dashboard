@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { FiMenu } from 'react-icons/fi';
 import { useAppStore } from '../store/appStore';
 import { ThemeToggle } from './ui/ThemeToggle';
