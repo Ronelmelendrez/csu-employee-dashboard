@@ -15,15 +15,23 @@ export function StatusBadge({ status, small }: { status: string; small?: boolean
 // ─── SummaryCard ─────────────────────────────────────────────────────────────
 export function SummaryCard({ label, value, icon, color, sub }: { label: string; value: number; icon: string; color: string; sub?: string }) {
   return (
-    <div style={{ background: "var(--card)", borderRadius: 14, padding: "20px 24px", boxShadow: "0 2px 12px rgba(0,0,0,0.07)", border: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 16, transition: "transform 0.18s", cursor: "default" }}
-      onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
-      onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+    <div style={{ background: "var(--card)", borderRadius: 16, padding: "24px", boxShadow: "0 4px 16px rgba(0,0,0,0.08)", border: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 16, transition: "all 0.2s ease", cursor: "default", position: "relative", overflow: "hidden" }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = "translateY(-4px)";
+        e.currentTarget.style.boxShadow = "0 12px 24px rgba(0,0,0,0.12)";
+        e.currentTarget.style.borderColor = color + "40";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)";
+        e.currentTarget.style.borderColor = "var(--border)";
+      }}
     >
-      <div style={{ width: 48, height: 48, borderRadius: 12, background: color + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>{icon}</div>
-      <div>
-        <div style={{ fontSize: 26, fontWeight: 700, color: "var(--text)", lineHeight: 1.1 }}>{value}</div>
-        <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2, fontWeight: 500 }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color, marginTop: 3, fontWeight: 600 }}>{sub}</div>}
+      <div style={{ width: 56, height: 56, borderRadius: 14, background: color + "15", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0, border: `1px solid ${color}30` }}>{icon}</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 28, fontWeight: 800, color: "var(--text)", lineHeight: 1.1, letterSpacing: "-0.3px" }}>{value}</div>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4, fontWeight: 500, textTransform: "uppercase", letterSpacing: 0.3 }}>{label}</div>
+        {sub && <div style={{ fontSize: 12, color, marginTop: 6, fontWeight: 700 }}>{sub}</div>}
       </div>
     </div>
   );
@@ -32,8 +40,15 @@ export function SummaryCard({ label, value, icon, color, sub }: { label: string;
 // ─── ChartCard ────────────────────────────────────────────────────────────────
 export function ChartCard({ title, children, span }: { title: string; children: React.ReactNode; span?: number }) {
   return (
-    <div style={{ background: "var(--card)", borderRadius: 14, padding: "20px 24px", boxShadow: "0 2px 12px rgba(0,0,0,0.07)", border: "1px solid var(--border)", gridColumn: span ? `span ${span}` : "span 1" }}>
-      <div style={{ fontWeight: 700, fontSize: 14, color: "var(--text)", marginBottom: 16, letterSpacing: 0.2 }}>{title}</div>
+    <div style={{ background: "var(--card)", borderRadius: 16, padding: "24px", boxShadow: "0 4px 16px rgba(0,0,0,0.08)", border: "1px solid var(--border)", gridColumn: span ? `span ${span}` : "span 1", transition: "all 0.2s ease" }}
+      onMouseEnter={e => {
+        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.1)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)";
+      }}
+    >
+      <div style={{ fontWeight: 800, fontSize: 15, color: "var(--text)", marginBottom: 20, letterSpacing: 0.2, textTransform: "uppercase", opacity: 0.95 }}>{title}</div>
       {children}
     </div>
   );

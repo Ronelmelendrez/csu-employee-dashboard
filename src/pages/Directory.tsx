@@ -59,16 +59,16 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32, paddingBottom: 24, flexWrap: "wrap", gap: 12, borderBottom: "1px solid var(--border)" }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", margin: 0 }}>Employee Directory</h1>
-          <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{filtered.length} employees found</p>
+          <h1 style={{ fontSize: 32, fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.5px" }}>Employee Directory</h1>
+          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, fontWeight: 500 }}>{filtered.length} employees found</p>
         </div>
-        <button onClick={() => exportCSV(filtered)} style={{ background: "#10b981", color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>↓ Export CSV</button>
+        <button onClick={() => exportCSV(filtered)} style={{ background: "#10b981", color: "#fff", border: "none", borderRadius: 10, padding: "10px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", boxShadow: "0 4px 12px rgba(16,185,129,0.3)" }} onMouseEnter={e => {e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 20px rgba(16,185,129,0.4)";}} onMouseLeave={e => {e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(16,185,129,0.3)";}}>↓ Export CSV</button>
       </div>
 
-      <div style={{ background: "var(--card)", borderRadius: 14, padding: 16, marginBottom: 16, border: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <div style={{ background: "var(--card)", borderRadius: 16, padding: 20, marginBottom: 20, border: "1px solid var(--border)", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="🔍  Search all columns…" style={{ flex: "1 1 200px", ...selStyle, minWidth: 180 }} />
           <select value={filters.employmentStatus} onChange={e => setFilter("employmentStatus", e.target.value)} style={selStyle}>
             <option value="">All Status</option>
@@ -90,13 +90,13 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
         </div>
       </div>
 
-      <div style={{ background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+      <div style={{ background: "var(--card)", borderRadius: 16, border: "1px solid var(--border)", overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
-              <tr style={{ borderBottom: "2px solid var(--border)" }}>
+              <tr style={{ borderBottom: "2px solid var(--border)", background: "var(--hover)" }}>
                 {COLS.map(col => (
-                  <th key={col.key} onClick={() => handleSort(col.key)} style={{ padding: "12px 14px", textAlign: "left", fontWeight: 700, color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.6, cursor: "pointer", whiteSpace: "nowrap", userSelect: "none", background: "var(--card)" }}>
+                  <th key={col.key} onClick={() => handleSort(col.key)} style={{ padding: "14px 16px", textAlign: "left", fontWeight: 800, color: "var(--text)", fontSize: 12, textTransform: "uppercase", letterSpacing: 0.5, cursor: "pointer", whiteSpace: "nowrap", userSelect: "none" }}>
                     {col.label} {sortKey === col.key ? (sortDir === 1 ? "↑" : "↓") : ""}
                   </th>
                 ))}

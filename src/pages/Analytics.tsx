@@ -15,14 +15,14 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", margin: 0 }}>Analytics</h1>
-        <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>Deep insights into employee data</p>
+      <div style={{ marginBottom: 32, paddingBottom: 24, borderBottom: "1px solid var(--border)" }}>
+        <h1 style={{ fontSize: 32, fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.5px" }}>Advanced Analytics</h1>
+        <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, fontWeight: 500 }}>Deep insights into employee data and trends</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20 }}>
         <ChartCard title="Funding Source Breakdown">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <BarChart data={fundingData} layout="vertical" margin={{ left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis type="number" fontSize={10} tick={{ fill: "var(--muted)" }} />
@@ -36,9 +36,9 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
         </ChartCard>
 
         <ChartCard title="Schooling Status">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <PieChart>
-              <Pie data={schoolingData} cx="50%" cy="50%" outerRadius={85} dataKey="value" label={({ name, value }) => `${name}\n${value}`} fontSize={11}>
+              <Pie data={schoolingData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({ name, value }) => `${name}\n${value}`} fontSize={11}>
                 {schoolingData.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
               </Pie>
               <Tooltip />
@@ -47,7 +47,7 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
         </ChartCard>
 
         <ChartCard title="Top Universities / DHEI">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <BarChart data={universityData} layout="vertical" margin={{ left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis type="number" fontSize={10} tick={{ fill: "var(--muted)" }} />
@@ -59,9 +59,9 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
         </ChartCard>
 
         <ChartCard title="Connected vs Not Connected">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <PieChart>
-              <Pie data={connectedData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} dataKey="value" label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`} fontSize={11}>
+              <Pie data={connectedData} cx="50%" cy="50%" innerRadius={65} outerRadius={95} dataKey="value" label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`} fontSize={11}>
                 <Cell fill="#10b981" />
                 <Cell fill="#ef4444" />
               </Pie>
@@ -71,7 +71,7 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
         </ChartCard>
 
         <ChartCard title="Reinstatement Distribution">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <BarChart data={reinstatementData}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="name" fontSize={11} tick={{ fill: "var(--text)" }} />
