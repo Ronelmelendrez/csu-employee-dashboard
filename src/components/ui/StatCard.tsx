@@ -6,10 +6,9 @@ interface StatCardProps {
   value: string | number;
   icon: ReactNode;
   trend?: number;
-  color?: string;
 }
 
-export const StatCard = ({ title, value, icon, trend, color = 'primary' }: StatCardProps) => {
+export const StatCard = ({ title, value, icon, trend }: StatCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

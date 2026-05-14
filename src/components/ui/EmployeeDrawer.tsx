@@ -176,5 +176,6 @@ export const EmployeeDrawer = ({ employee, isOpen, onClose }: EmployeeDrawerProp
           </motion.div>
         </>
       )}
+    </AnimatePresence>
   );
 };
