@@ -12,7 +12,7 @@ const DEFAULT_COLORS = ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'];
 export const PieChartCard = ({ title, data, colors = DEFAULT_COLORS }: PieChartCardProps) => {
   return (
     <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -29,7 +29,7 @@ export const PieChartCard = ({ title, data, colors = DEFAULT_COLORS }: PieChartC
               <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>

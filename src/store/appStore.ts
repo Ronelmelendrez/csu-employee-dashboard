@@ -38,11 +38,30 @@ const initialFilters: FilterState = {
   connected: [],
 };
 
+// Sample data for demonstration
+const sampleEmployees: Employee[] = [
+  { no: 'EMP001', currentRank: 'Professor', officialStation: 'Main Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Academic', fundingSource: 'Government', universityAttended: 'University of the Philippines', graduationDate: '2010-05-15', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP002', currentRank: 'Associate Professor', officialStation: 'Main Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Academic', fundingSource: 'Government', universityAttended: 'Ateneo de Manila University', graduationDate: '2012-06-20', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP003', currentRank: 'Instructor', officialStation: 'Extension Campus', employmentStatus: 'Contractual', categoryOfEmployment: 'Academic', fundingSource: 'Government', universityAttended: 'De La Salle University', graduationDate: '2015-07-10', schoolingStatus: 'Completed', connectedWithCSU: 'No' },
+  { no: 'EMP004', currentRank: 'Administrative Officer', officialStation: 'Main Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Administrative', fundingSource: 'Government', universityAttended: 'University of the Philippines', graduationDate: '2014-08-22', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP005', currentRank: 'IT Specialist', officialStation: 'Main Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Support', fundingSource: 'Government', universityAttended: 'Technological University of the Philippines', graduationDate: '2013-05-18', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP006', currentRank: 'Librarian', officialStation: 'Main Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Administrative', fundingSource: 'Government', universityAttended: 'University of Santo Tomas', graduationDate: '2011-06-12', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP007', currentRank: 'Research Associate', officialStation: 'Research Center', employmentStatus: 'Contractual', categoryOfEmployment: 'Academic', fundingSource: 'Research Grant', universityAttended: 'University of the Philippines', graduationDate: '2016-07-25', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP008', currentRank: 'Security Personnel', officialStation: 'Main Campus', employmentStatus: 'Casual', categoryOfEmployment: 'Support', fundingSource: 'Government', universityAttended: 'Caraga State University', graduationDate: '2017-05-30', schoolingStatus: 'Completed', connectedWithCSU: 'No' },
+  { no: 'EMP009', currentRank: 'Assistant Professor', officialStation: 'Extension Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Academic', fundingSource: 'Government', universityAttended: 'Mindanao State University', graduationDate: '2013-08-15', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP010', currentRank: 'Finance Officer', officialStation: 'Main Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Administrative', fundingSource: 'Government', universityAttended: 'University of the Philippines', graduationDate: '2012-07-20', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP011', currentRank: 'Professor', officialStation: 'Main Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Academic', fundingSource: 'Government', universityAttended: 'University of the Philippines', graduationDate: '2008-06-10', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP012', currentRank: 'Instructor', officialStation: 'Main Campus', employmentStatus: 'Contractual', categoryOfEmployment: 'Academic', fundingSource: 'Government', universityAttended: 'Ateneo de Manila University', graduationDate: '2016-05-20', schoolingStatus: 'Completed', connectedWithCSU: 'No' },
+  { no: 'EMP013', currentRank: 'Associate Professor', officialStation: 'Extension Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Academic', fundingSource: 'Government', universityAttended: 'De La Salle University', graduationDate: '2011-07-15', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+  { no: 'EMP014', currentRank: 'Maintenance Staff', officialStation: 'Main Campus', employmentStatus: 'Casual', categoryOfEmployment: 'Support', fundingSource: 'Government', universityAttended: 'Caraga State University', graduationDate: '2018-06-25', schoolingStatus: 'Completed', connectedWithCSU: 'No' },
+  { no: 'EMP015', currentRank: 'Registrar', officialStation: 'Main Campus', employmentStatus: 'Permanent', categoryOfEmployment: 'Administrative', fundingSource: 'Government', universityAttended: 'University of the Philippines', graduationDate: '2010-08-20', schoolingStatus: 'Completed', connectedWithCSU: 'Yes' },
+];
+
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      employees: [],
-      filteredEmployees: [],
+      employees: sampleEmployees,
+      filteredEmployees: sampleEmployees,
       filters: initialFilters,
       isLoading: false,
       darkMode: false,
@@ -69,7 +88,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'csu-dashboard-storage',
-      partialize: (state) => ({ darkMode: state.darkMode, sidebarCollapsed: state.sidebarCollapsed }),
+      partialize: (state) => ({ darkMode: state.darkMode, sidebarCollapsed: state.sidebarCollapsed, employees: state.employees }),
     }
   )
 );

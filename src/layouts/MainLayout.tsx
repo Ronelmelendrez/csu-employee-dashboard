@@ -8,8 +8,10 @@ export const MainLayout = () => {
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Navbar />
-        <main className="flex-1 overflow-auto">
-          <Outlet />
+        <main className="flex-1 overflow-auto p-6">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

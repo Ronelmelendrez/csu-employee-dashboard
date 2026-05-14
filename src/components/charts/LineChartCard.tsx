@@ -13,12 +13,12 @@ export const LineChartCard = ({ title, data, color = '#10b981' }: LineChartCardP
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" />
-          <YAxis />
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis dataKey="year" stroke="#6b7280" />
+          <YAxis stroke="#6b7280" />
+          <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }} />
           <Legend />
-          <Line type="monotone" dataKey="count" stroke={color} strokeWidth={2} />
+          <Line type="monotone" dataKey="count" stroke={color} strokeWidth={2} dot={{ fill: color }} />
         </LineChart>
       </ResponsiveContainer>
     </Card>

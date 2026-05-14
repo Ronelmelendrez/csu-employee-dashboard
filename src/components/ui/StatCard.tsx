@@ -27,7 +27,7 @@ export const StatCard = ({ title, value, icon, trend, color = 'primary' }: StatC
             </p>
           )}
         </div>
-        <div className={`p-3 rounded-full bg-${color}-100 dark:bg-${color}-900/20`}>
+        <div className="p-3 rounded-full bg-primary-100 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400">
           {icon}
         </div>
       </div>

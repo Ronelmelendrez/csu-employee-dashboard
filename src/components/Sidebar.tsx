@@ -17,7 +17,7 @@ export const Sidebar = () => {
     <motion.aside
       initial={false}
       animate={{ width: sidebarCollapsed ? 80 : 280 }}
-      className="h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 fixed left-0 top-0 z-20 transition-all duration-300"
+      className="h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 fixed left-0 top-0 z-20 transition-all duration-300 shadow-lg"
     >
       <div className="flex flex-col h-full">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
