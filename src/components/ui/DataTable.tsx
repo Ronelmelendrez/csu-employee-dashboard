@@ -33,37 +33,52 @@ export function DataTable<TData>({ columns, data, onRowClick }: DataTableProps<T
   });
 
   return (
-    <div className="w-full">
-      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-800">
+    <div className="w-full space-y-4">
+      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+          <thead className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-800/50 border-b-2 border-slate-200 dark:border-slate-700">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="px-6 py-4 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors"
                   >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    <span className="ml-1">
-                      {header.column.getIsSorted() === 'asc' ? '↑' : header.column.getIsSorted() === 'desc' ? '↓' : ''}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      <motion.span
+                        initial={false}
+                        animate={{
+                          rotate: header.column.getIsSorted() === 'desc' ? 180 : 0,
+                          opacity: header.column.getIsSorted() ? 1 : 0.3,
+                        }}
+                        className="text-primary-600 dark:text-primary-400"
+                      >
+                        {header.column.getIsSorted() === 'asc' ? '↑' : header.column.getIsSorted() === 'desc' ? '↓' : '↕'}
+                      </motion.span>
+                    </div>
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-            {table.getRowModel().rows.map((row) => (
+          <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700">
+            {table.getRowModel().rows.map((row, idx) => (
               <motion.tr
                 key={row.id}
-                whileHover={{ backgroundColor: 'rgba(0,0,0,0.02)' }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.02 }}
+                whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
                 onClick={() => onRowClick?.(row.original)}
-                className="cursor-pointer transition-colors"
+                className="cursor-pointer transition-colors hover:shadow-sm"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                  <td
+                    key={cell.id}
+                    className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-300 font-medium"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -74,51 +89,66 @@ export function DataTable<TData>({ columns, data, onRowClick }: DataTableProps<T
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex items-center justify-between px-2">
+        <div className="text-sm text-slate-600 dark:text-slate-400">
+          Page <span className="font-bold text-slate-900 dark:text-white">{table.getState().pagination.pageIndex + 1}</span> of{' '}
+          <span className="font-bold text-slate-900 dark:text-white">{table.getPageCount()}</span>
+        </div>
+
         <div className="flex items-center gap-2">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
-            className="p-2 rounded border disabled:opacity-50"
+            className="p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            title="First page"
           >
-            <FiChevronsLeft />
-          </button>
-          <button
+            <FiChevronsLeft size={18} />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="p-2 rounded border disabled:opacity-50"
+            className="p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            title="Previous page"
           >
-            <FiChevronLeft />
-          </button>
-          <span className="text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-          </span>
-          <button
+            <FiChevronLeft size={18} />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="p-2 rounded border disabled:opacity-50"
+            className="p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            title="Next page"
           >
-            <FiChevronRight />
-          </button>
-          <button
+            <FiChevronRight size={18} />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
-            className="p-2 rounded border disabled:opacity-50"
+            className="p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            title="Last page"
           >
-            <FiChevronsRight />
-          </button>
+            <FiChevronsRight size={18} />
+          </motion.button>
+
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+            className="ml-4 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          >
+            {[10, 20, 30, 50].map((size) => (
+              <option key={size} value={size}>
+                Show {size}
+              </option>
+            ))}
+          </select>
         </div>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => table.setPageSize(Number(e.target.value))}
-          className="px-2 py-1 border rounded dark:bg-gray-800"
-        >
-          {[10, 20, 30, 50].map((size) => (
-            <option key={size} value={size}>
-              Show {size}
-            </option>
-          ))}
-        </select>
       </div>
     </div>
   );
