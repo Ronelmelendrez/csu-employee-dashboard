@@ -7,7 +7,7 @@ export const Navbar = () => {
   const { toggleSidebar } = useAppStore();
 
   return (
-    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4 sticky top-0 z-10 shadow-sm">
+    <nav className="glass-effect sticky top-0 z-10 px-4 py-4 border-b border-white/20 dark:border-slate-700/50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button

@@ -74,12 +74,12 @@ export const Directory = () => {
     >
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Employee Directory</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">View and search employee records</p>
+          <h1 className="section-title text-4xl">Employee Directory</h1>
+          <p className="text-slate-600 dark:text-slate-300 mt-2 text-lg">View and search employee records</p>
         </div>
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          className="btn-primary flex items-center gap-2"
         >
           <FiDownload size={18} />
           Export CSV
@@ -87,21 +87,21 @@ export const Directory = () => {
       </div>
 
       {/* Filters Bar */}
-      <div className="card p-4 space-y-4">
+      <div className="card p-6 space-y-4">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Global search..."
               value={filters.searchTerm}
               onChange={(e) => setFilter('searchTerm', e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <button
             onClick={resetFilters}
-            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="btn-secondary"
           >
             Clear Filters
           </button>
@@ -112,7 +112,7 @@ export const Directory = () => {
             multiple
             value={filters.employmentStatus}
             onChange={(e) => setFilter('employmentStatus', Array.from(e.target.selectedOptions, opt => opt.value))}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
             size={3}
           >
             <option value="" disabled>Employment Status</option>

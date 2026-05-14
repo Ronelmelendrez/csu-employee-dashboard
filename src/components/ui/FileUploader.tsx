@@ -47,7 +47,7 @@ export const FileUploader = () => {
       />
       <label
         htmlFor="file-upload"
-        className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg cursor-pointer hover:bg-primary-700 transition-colors"
+        className="btn-primary flex items-center gap-2"
       >
         <FiUpload size={18} />
         <span>Upload Excel</span>

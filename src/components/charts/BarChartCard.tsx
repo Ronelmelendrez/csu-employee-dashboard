@@ -10,7 +10,7 @@ interface BarChartCardProps {
 export const BarChartCard = ({ title, data, color = '#10b981' }: BarChartCardProps) => {
   return (
     <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{title}</h3>
+      <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />

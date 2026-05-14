@@ -27,12 +27,12 @@ export const Dashboard = () => {
       className="space-y-6"
     >
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome to Caraga State University Employee Dashboard</p>
+        <h1 className="section-title text-4xl">Dashboard Overview</h1>
+        <p className="text-slate-600 dark:text-slate-300 mt-2 text-lg">Welcome to Caraga State University Employee Dashboard</p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard title="Total Employees" value={stats.total} icon={<FiUsers size={24} />} trend={2.5} />
         <StatCard title="Active Employees" value={stats.active} icon={<FiUserCheck size={24} />} trend={1.8} />
         <StatCard title="Contractual" value={stats.contractual} icon={<FiUserX size={24} />} trend={-0.5} />

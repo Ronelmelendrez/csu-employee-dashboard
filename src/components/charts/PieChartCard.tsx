@@ -11,8 +11,8 @@ const DEFAULT_COLORS = ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'];
 
 export const PieChartCard = ({ title, data, colors = DEFAULT_COLORS }: PieChartCardProps) => {
   return (
-    <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{title}</h3>
+    <Card className="p-6">
+      <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
