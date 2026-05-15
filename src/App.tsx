@@ -6,6 +6,7 @@ import { EmployeeDrawer } from "./components/ui/index";
 import { NAV_ITEMS } from "./utils/index";
 import { useGoogleSheetsSync } from "./hooks/useGoogleSheetsSync";
 import { Employee } from "./types/employee";
+import { debugSheets } from "./utils/debug";
 
 export default function App() {
   const [dark, setDark] = useState(false);
@@ -20,6 +21,13 @@ export default function App() {
     onSuccess: (data) => console.log(`✓ Synced ${data.length} employees`),
     onError: (err) => console.error(`✗ Sync failed: ${err}`),
   });
+
+  // Expose debug function globally
+  useEffect(() => {
+    (window as any).debugSheets = () => {
+      debugSheets(import.meta.env.VITE_GOOGLE_SHEETS_URL || "");
+    };
+  }, []);
 
   // Fetch data on mount
   useEffect(() => {

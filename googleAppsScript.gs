@@ -253,6 +253,8 @@ function doGet(e) {
       return getColumnMapping();
     } else if (action === "getHeaders") {
       return getHeaders(sheetName);
+    } else if (action === "debug") {
+      return debugAllSheets();
     } else {
       return createResponse(false, "Unknown action", null);
     }
@@ -652,6 +654,50 @@ function getHeaders(sheetName = DEFAULT_SHEET) {
   }));
   
   return createResponse(true, `Found ${headers.length} headers in "${sheetName}" at row ${headerRowIndex + 1}`, headerInfo);
+}
+
+/**
+ * Debug function to show all sheets structure
+ */
+function debugAllSheets() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const allSheets = AVAILABLE_SHEETS.filter(name => name !== "Summary");
+  const debug = {};
+  
+  for (let i = 0; i < allSheets.length; i++) {
+    const sheetName = allSheets[i];
+    const sheet = ss.getSheetByName(sheetName);
+    
+    if (!sheet) {
+      debug[sheetName] = { error: "Sheet not found" };
+      continue;
+    }
+    
+    const data = sheet.getDataRange().getValues();
+    if (data.length === 0) {
+      debug[sheetName] = { error: "Sheet is empty" };
+      continue;
+    }
+    
+    const headerRowIndex = findHeaderRowIndex(data, 10);
+    const headers = data[headerRowIndex];
+    const firstDataRow = data[headerRowIndex + 1];
+    
+    debug[sheetName] = {
+      totalRows: data.length,
+      headerRowIndex: headerRowIndex,
+      headers: headers,
+      firstDataRow: firstDataRow,
+      headerMappings: headers.map((h, idx) => ({
+        col: idx,
+        header: h,
+        field: getFieldNameForHeader(h),
+        value: firstDataRow ? firstDataRow[idx] : null
+      }))
+    };
+  }
+  
+  return createResponse(true, "Debug info for all sheets", debug);
 }
 
 /**
