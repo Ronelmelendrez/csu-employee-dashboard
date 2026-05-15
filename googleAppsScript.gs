@@ -251,6 +251,8 @@ function doGet(e) {
       return getAvailableSheets();
     } else if (action === "getMapping") {
       return getColumnMapping();
+    } else if (action === "getHeaders") {
+      return getHeaders(sheetName);
     } else {
       return createResponse(false, "Unknown action", null);
     }
@@ -305,12 +307,16 @@ function findHeaderRowIndex(data, maxScanRows) {
         matchCount++;
       }
     }
+    
+    console.log(`Row ${i}: ${matchCount} matching headers out of ${row.length} columns. Headers: ${row.slice(0, 5).map(h => `"${h}"`).join(", ")} ...`);
 
     if (matchCount > bestMatchCount) {
       bestMatchCount = matchCount;
       bestIndex = i;
     }
   }
+  
+  console.log(`→ Selected header row ${bestIndex} with ${bestMatchCount} matches`);
 
   return bestIndex;
 }
@@ -365,17 +371,33 @@ function getEmployeesFromAllSheets() {
   const uniqueByName = new Map();
   const sheets = AVAILABLE_SHEETS.filter(name => name !== "Summary");
 
+  console.log(`Processing ${sheets.length} sheets: ${sheets.join(", ")}`);
+
   for (let i = 0; i < sheets.length; i++) {
     const sheetName = sheets[i];
     const sheet = ss.getSheetByName(sheetName);
-    if (!sheet) continue;
+    if (!sheet) {
+      console.log(`  Sheet "${sheetName}": NOT FOUND`);
+      continue;
+    }
 
     const data = sheet.getDataRange().getValues();
-    if (data.length === 0) continue;
+    if (data.length === 0) {
+      console.log(`  Sheet "${sheetName}": EMPTY`);
+      continue;
+    }
 
     const headerRowIndex = findHeaderRowIndex(data, 10);
     const headers = data[headerRowIndex];
+    
+    console.log(`  Sheet "${sheetName}": Found headers at row ${headerRowIndex}:`);
+    headers.forEach((h, idx) => {
+      const field = getFieldNameForHeader(h);
+      console.log(`    [${idx}] "${h}" → ${field || "NOT_MAPPED"}`);
+    });
+    
     let autoId = 1;
+    let rowsProcessed = 0;
 
     for (let r = headerRowIndex + 1; r < data.length; r++) {
       const employee = rowToEmployee(headers, data[r]);
@@ -394,16 +416,23 @@ function getEmployeesFromAllSheets() {
       if (!nameKey) {
         const fallbackKey = `${employee.id}-${employee.no}-${sheetName}-${r}`;
         uniqueByName.set(fallbackKey, employee);
+        rowsProcessed++;
         continue;
       }
 
       if (!uniqueByName.has(nameKey)) {
         uniqueByName.set(nameKey, employee);
+        rowsProcessed++;
       }
     }
+    
+    console.log(`  Sheet "${sheetName}": Processed ${rowsProcessed} rows`);
   }
 
   const employees = Array.from(uniqueByName.values());
+  console.log(`Total unique employees: ${employees.length}`);
+  console.log(`Sample employee 0: id=${employees[0]?.id}, name="${employees[0]?.name}", connectedWithCSU="${employees[0]?.connectedWithCSU}"`);
+  
   return createResponse(true, `Retrieved ${employees.length} unique employees from all sheets`, employees);
 }
 
@@ -594,6 +623,35 @@ function getAvailableSheets() {
  */
 function getColumnMapping() {
   return createResponse(true, "Column mapping configuration", COLUMN_MAPPING);
+}
+
+/**
+ * Get headers from a specific sheet for debugging
+ */
+function getHeaders(sheetName = DEFAULT_SHEET) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(sheetName);
+  
+  if (!sheet) {
+    return createResponse(false, `Sheet "${sheetName}" not found`, null);
+  }
+  
+  const data = sheet.getDataRange().getValues();
+  if (data.length === 0) {
+    return createResponse(false, "Sheet is empty", null);
+  }
+  
+  const headerRowIndex = findHeaderRowIndex(data, 10);
+  const headers = data[headerRowIndex];
+  
+  const headerInfo = headers.map((h, idx) => ({
+    index: idx,
+    rawValue: h,
+    normalized: normalizeHeader(h),
+    mappedField: getFieldNameForHeader(h)
+  }));
+  
+  return createResponse(true, `Found ${headers.length} headers in "${sheetName}" at row ${headerRowIndex + 1}`, headerInfo);
 }
 
 /**

@@ -10,6 +10,13 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
   const contractual = employees.filter(e => ["Contractual", "COS", "Job Order", "Casual"].includes(e.employmentStatus)).length;
   const connected = employees.filter(e => e.connectedWithCSU === "Yes").length;
 
+  // Debug logging
+  console.log(`Dashboard: Total employees=${total}, Connected=${connected}`);
+  console.log(`Connected status values in data:`, employees.map(e => e.connectedWithCSU).slice(0, 10));
+  console.log(`Employees with connectedWithCSU="Yes":`, employees.filter(e => e.connectedWithCSU === "Yes").length);
+  console.log(`Employees with connectedWithCSU="No":`, employees.filter(e => e.connectedWithCSU === "No").length);
+  console.log(`Employees with connectedWithCSU="Deceased":`, employees.filter(e => e.connectedWithCSU === "Deceased").length);
+
   const statusData = toChartData(groupBy(employees, "employmentStatus"));
   const stationData = toChartData(groupBy(employees, "officialStation")).slice(0, 8);
   const uniqueByName = Array.from(

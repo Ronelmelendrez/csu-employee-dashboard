@@ -162,6 +162,12 @@ export async function fetchEmployeesFromGoogleSheets(
       })
       .filter((emp: Employee) => emp); // Remove any null/undefined
 
+    // Log connectedWithCSU values for first 5 employees for debugging
+    console.log("First 5 employees' connectedWithCSU values:");
+    employees.slice(0, 5).forEach((emp, i) => {
+      console.log(`  Employee ${i}: id=${emp.id}, name="${emp.name}", connectedWithCSU="${emp.connectedWithCSU}"`);
+    });
+
     console.log(
       `✓ Successfully loaded ${employees.length} employees from "${sheetName}"`
     );
