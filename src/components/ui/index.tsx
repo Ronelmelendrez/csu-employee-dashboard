@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import { parseExcel, STATUS_COLORS } from "../../utils/index";
+import { STATUS_COLORS } from "../../utils/index";
 import { Employee } from "../../types/employee";
 
 // ─── StatusBadge ─────────────────────────────────────────────────────────────
@@ -101,44 +101,4 @@ export function EmployeeDrawer({ employee, onClose }: { employee: Employee | nul
   );
 }
 
-// ─── Upload Banner ────────────────────────────────────────────────────────────
-export function UploadBanner({ onUpload, hasData }: { onUpload: (data: Employee[]) => void; hasData: boolean }) {
-  const [dragging, setDragging] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handle = useCallback(async (file: File | null) => {
-    if (!file) return;
-    if (!file.name.match(/\.(xlsx|xls)$/i)) {
-      setError("Please upload an Excel file (.xlsx or .xls)");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const data = await parseExcel(file);
-      onUpload(data);
-    } catch {
-      setError("Failed to parse file. Check the format.");
-    } finally {
-      setLoading(false);
-    }
-  }, [onUpload]);
-
-  return (
-    <div
-      onDragOver={e => { e.preventDefault(); setDragging(true); }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={e => { e.preventDefault(); setDragging(false); handle(e.dataTransfer.files[0]); }}
-      onClick={() => inputRef.current?.click()}
-      style={{ border: `2px dashed ${dragging ? "#10b981" : "var(--border)"}`, borderRadius: 14, padding: "32px 24px", textAlign: "center", cursor: "pointer", background: dragging ? "#10b98108" : "var(--card)", transition: "all 0.2s", margin: "0 0 24px" }}
-    >
-      <input ref={inputRef} type="file" accept=".xlsx,.xls" style={{ display: "none" }} onChange={e => handle(e.target.files?.[0] || null)} />
-      <div style={{ fontSize: 32, marginBottom: 8 }}>📊</div>
-      <div style={{ fontWeight: 600, color: "var(--text)", marginBottom: 4 }}>{loading ? "Parsing spreadsheet…" : hasData ? "Upload a different Excel file" : "Upload Employee Spreadsheet"}</div>
-      <div style={{ fontSize: 12, color: "var(--muted)" }}>Drag & drop or click · .xlsx / .xls</div>
-      {error && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 8 }}>{error}</div>}
-    </div>
-  );
-}

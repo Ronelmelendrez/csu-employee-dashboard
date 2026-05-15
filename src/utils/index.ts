@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import * as XLSX from "xlsx";
 import { Employee } from "../types/employee";
 
 // ─── Types & Constants ───────────────────────────────────────────────────────
@@ -40,40 +39,6 @@ export const SAMPLE_DATA: Employee[] = [
 ];
 
 // ─── Utility Functions ────────────────────────────────────────────────────────
-export function parseExcel(file: File): Promise<Employee[]> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-        const mapped = rows.map((row: any, i: number) => ({
-          id: i + 1,
-          currentRank: row["Current Rank"] || row["currentRank"] || "",
-          officialStation: row["Official Station"] || row["officialStation"] || "",
-          categoryOfEmployment: row["Category of Employment"] || row["categoryOfEmployment"] || "",
-          employmentStatus: row["Employment Status"] || row["employmentStatus"] || "",
-          courseProgram: row["Course/Program"] || row["courseProgram"] || "",
-          fundingSource: row["Funding Source"] || row["fundingSource"] || "",
-          universityAttended: row["University Attended/DHEI"] || row["universityAttended"] || "",
-          contractDuration: row["Contract Duration"] || row["contractDuration"] || "",
-          reinstatement: row["Reinstatement"] || row["reinstatement"] || "",
-          schoolingStatus: row["Schooling Status"] || row["schoolingStatus"] || "",
-          graduationDate: row["Graduation Date"] || row["graduationDate"] || "",
-          connectedWithCSU: row["Still Connected with CSU? (As of 2025)"] || row["connectedWithCSU"] || "",
-        }));
-        resolve(mapped);
-      } catch (err) {
-        reject(err);
-      }
-    };
-    reader.onerror = reject;
-    reader.readAsArrayBuffer(file);
-  });
-}
-
 export function groupBy(arr: Employee[], key: keyof Employee): Record<string, number> {
   return arr.reduce((acc, item) => {
     const val = String(item[key]) || "Unknown";

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { DashboardPage } from "./pages/Dashboard";
 import { DirectoryPage } from "./pages/Directory";
 import { AnalyticsPage } from "./pages/Analytics";
-import { UploadBanner, EmployeeDrawer } from "./components/ui/index";
+import { EmployeeDrawer } from "./components/ui/index";
 import { NAV_ITEMS, SAMPLE_DATA } from "./utils/index";
 import { Employee } from "./types/employee";
 
@@ -63,8 +63,6 @@ export default function App() {
 
         {/* Content */}
         <main style={{ flex: 1, padding: "28px 28px", overflowY: "auto" }}>
-          <UploadBanner onUpload={setEmployees} hasData={employees !== SAMPLE_DATA} />
-
           {page === "dashboard" && <DashboardPage employees={employees} />}
           {page === "directory" && <DirectoryPage employees={employees} onSelectEmployee={setSelected} />}
           {page === "analytics" && <AnalyticsPage employees={employees} />}
