@@ -54,6 +54,8 @@ export function ChartCard({ title, children, span }: { title: string; children: 
   );
 }
 
+export { ScholarSummaryWidget } from './ScholarSummaryWidget';
+
 // ─── Employee Drawer ──────────────────────────────────────────────────────────
 export function EmployeeDrawer({ employee, onClose }: { employee: Employee | null; onClose: () => void }) {
   if (!employee) return null;

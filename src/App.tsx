@@ -14,7 +14,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Initialize Google Sheets sync
-  const { employees, loading, error } = useGoogleSheetsSync({
+  const { employees, loading, error, syncFromSheet } = useGoogleSheetsSync({
     webAppUrl: import.meta.env.VITE_GOOGLE_SHEETS_URL || "",
     defaultSheetName: "Masterlist",
     onSuccess: (data) => console.log(`✓ Synced ${data.length} employees`),
@@ -24,11 +24,11 @@ export default function App() {
   // Fetch data on mount
   useEffect(() => {
     if (import.meta.env.VITE_GOOGLE_SHEETS_URL) {
-      // Initial sync happens automatically in useGoogleSheetsSync
+      syncFromSheet("Masterlist");
     } else {
       console.warn("⚠️  VITE_GOOGLE_SHEETS_URL not configured in .env.local");
     }
-  }, []);
+  }, [syncFromSheet]);
 
   const theme = {
     "--bg": dark ? "#0f172a" : "#f8fafc",

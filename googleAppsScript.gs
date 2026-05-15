@@ -19,7 +19,7 @@
  */
 
 // Configuration - UPDATE THIS WITH YOUR SHEET ID
-const SPREADSHEET_ID = "YOUR_GOOGLE_SHEET_ID_HERE";
+const SPREADSHEET_ID = "1NCRhieMvDsGv0KhFCmCzR2bJm-CvA25AMbxhmgZY8xQ";
 const DEFAULT_SHEET = "Masterlist"; // Main sheet to read from
 
 // Available sheets in your spreadsheet
@@ -39,20 +39,29 @@ const AVAILABLE_SHEETS = [
  * Each value is an array of possible column header names (synonyms)
  */
 const COLUMN_MAPPING = {
-  id: ["id", "employee id", "emp id", "no.", "no", "#"],
-  no: ["no.", "no", "#", "employee no", "emp no"],
-  currentRank: ["current rank", "rank", "position", "job title", "title"],
-  officialStation: ["official station", "station", "campus", "office", "department"],
-  categoryOfEmployment: ["category of employment", "employment category", "employment type", "category"],
-  employmentStatus: ["employment status", "status", "employment stat"],
-  courseProgram: ["course program", "program", "course", "degree", "qualification"],
-  fundingSource: ["funding source", "funding", "budget source", "fund source"],
-  universityAttended: ["university attended", "university", "institution", "educational institution"],
-  contractDuration: ["contract duration", "duration", "contract period", "contract term"],
-  reinstatement: ["reinstatement", "reinstated", "reinstate"],
-  schoolingStatus: ["schooling status", "school status", "education status", "status school"],
-  graduationDate: ["graduation date", "grad date", "date graduated", "graduation"],
-  connectedWithCSU: ["connected with csu", "connected", "csu connection", "affiliation"]
+  id: ["EMPLOYEE ID NUMBER", "employee id number", "employee id", "EMPLOYEE ID", "ID", "id"],
+  no: ["No.", "NO.", "no.", "NO", "number", "NUMBER", "no"],
+  dateOfBirth: ["DATE OF BIRTH", "date of birth", "DOB", "dob", "birth date", "Birth Date"],
+  name: ["NAME", "name", "EMPLOYEE NAME", "employee name", "FULL NAME", "full name"],
+  address: ["ADDRESS", "address", "home address", "HOME ADDRESS", "residential address", "RESIDENTIAL ADDRESS"],
+  currentRank: ["CURRENT RANK", "current rank", "RANK", "rank", "position", "Position", "job title", "JOB TITLE"],
+  officialStation: ["OFFICIAL STATION", "official station", "STATION", "station", "campus", "Campus", "department", "Department"],
+  categoryOfEmployment: ["CATEGORY OF EMPLOYMENT", "category of employment", "EMPLOYMENT CATEGORY", "employment category", "employment type", "EMPLOYMENT TYPE"],
+  employmentStatus: ["EMPLOYMENT STATUS", "employment status", "STATUS", "status", "employment stat", "EMPLOYMENT STAT"],
+  courseProgram: ["COURSE/ PROGRAM", "course/ program", "COURSE/PROGRAM", "course/program", "PROGRAM", "program", "COURSE", "course", "degree", "DEGREE"],
+  fundingSource: ["FUNDING SOURCE", "funding source", "FUNDING", "funding", "budget source", "BUDGET SOURCE", "fund source", "FUND SOURCE"],
+  universityAttended: ["UNIVERSITY ATTENDED/DHEI", "university attended/dhei", "UNIVERSITY ATTENDED", "university attended", "UNIVERSITY", "university", "INSTITUTION", "institution"],
+  contractDuration: ["CONTRACT DURATION", "contract duration", "DURATION", "duration", "contract period", "CONTRACT PERIOD"],
+  leaveOfAbsence: ["LEAVE OF ABSENCE", "leave of absence", "LEAVE", "leave", "absence", "ABSENCE"],
+  resolutionOfStudyLeave: ["RESUMPTION OF STUDY LEAVE", "resumption of study leave", "STUDY LEAVE", "study leave", "resumption", "RESUMPTION"],
+  reinstatement: ["REINSTATEMENT", "reinstatement", "REINSTATED", "reinstated", "reinstate", "REINSTATE"],
+  schoolingStatus: ["SCHOOLING STATUS", "schooling status", "SCHOOL STATUS", "school status", "education status", "EDUCATION STATUS"],
+  graduationDate: ["GRADUATION DATE", "graduation date", "GRAD DATE", "grad date", "date graduated", "DATE GRADUATED"],
+  clothingAllowanceAndPBB: ["CLOTHING ALLOWANCE AND PBB", "clothing allowance and pbb", "CLOTHING ALLOWANCE", "clothing allowance", "PBB", "pbb"],
+  connectedWithCSU: ["Still connected with CSU?", "Still connected with CSU? As of 2025", "CONNECTED WITH CSU", "connected with csu", "CONNECTED", "connected", "CSU CONNECTION", "csu connection"],
+  returnService: ["RETURN SERVICE", "return service", "RETURN SVC", "return svc", "return", "RETURN"],
+  enrolled: ["Enrolled?", "ENROLLED?", "enrolled?", "ENROLLED", "enrolled", "enrollment", "ENROLLMENT"],
+  remarks: ["REMARKS", "remarks", "NOTES", "notes", "comment", "COMMENT", "comments", "COMMENTS"]
 };
 
 /**
@@ -117,6 +126,16 @@ function formatDate(value) {
   return String(value);
 }
 
+function normalizeYesNo(value) {
+  if (value === null || value === undefined) return "";
+  const text = String(value).trim().toLowerCase();
+
+  if (["yes", "y", "true", "1"].includes(text)) return "Yes";
+  if (["no", "n", "false", "0"].includes(text)) return "No";
+
+  return String(value).trim();
+}
+
 /**
  * Convert a row of data to Employee object with dynamic column mapping
  */
@@ -132,6 +151,8 @@ function rowToEmployee(headers, values) {
       // Special handling for date fields
       if (fieldName === "graduationDate") {
         employee[fieldName] = formatDate(value);
+      } else if (fieldName === "connectedWithCSU") {
+        employee[fieldName] = normalizeYesNo(value);
       } else {
         employee[fieldName] = value !== undefined ? String(value).trim() : "";
       }
@@ -202,6 +223,8 @@ function doGet(e) {
   try {
     if (action === "getAll") {
       return getEmployees(sheetName);
+    } else if (action === "getAllSheets") {
+      return getEmployees("ALL");
     } else if (action === "getById") {
       return getEmployeeById(e.parameter.id, sheetName);
     } else if (action === "getSheets") {
@@ -247,7 +270,36 @@ function doPost(e) {
 /**
  * Get all employees from a specific sheet with dynamic column mapping
  */
+function findHeaderRowIndex(data, maxScanRows) {
+  const scanLimit = Math.min(maxScanRows, data.length);
+  let bestIndex = 0;
+  let bestMatchCount = 0;
+
+  for (let i = 0; i < scanLimit; i++) {
+    const row = data[i];
+    if (!row || row.length === 0) continue;
+
+    let matchCount = 0;
+    for (let j = 0; j < row.length; j++) {
+      if (getFieldNameForHeader(row[j])) {
+        matchCount++;
+      }
+    }
+
+    if (matchCount > bestMatchCount) {
+      bestMatchCount = matchCount;
+      bestIndex = i;
+    }
+  }
+
+  return bestIndex;
+}
+
 function getEmployees(sheetName = DEFAULT_SHEET) {
+  if (sheetName === "ALL") {
+    return getEmployeesFromAllSheets();
+  }
+
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(sheetName);
   
@@ -260,20 +312,64 @@ function getEmployees(sheetName = DEFAULT_SHEET) {
     return createResponse(true, "No data found", []);
   }
   
-  const headers = data[0];
+  const headerRowIndex = findHeaderRowIndex(data, 10);
+  const headers = data[headerRowIndex];
   const employees = [];
+  let autoId = 1;
   
   // Process each row of data
-  for (let i = 1; i < data.length; i++) {
+  for (let i = headerRowIndex + 1; i < data.length; i++) {
     const employee = rowToEmployee(headers, data[i]);
     
-    // Only include rows that have at least an ID or name
-    if (employee.id || employee.currentRank) {
+    // Auto-generate unique ID based on row number if missing or empty
+    if (!employee.id || employee.id === "" || employee.id === 0) {
+      employee.id = autoId;
+      autoId++;
+    } else {
+      autoId = Math.max(autoId, parseInt(employee.id) || 0) + 1;
+    }
+    
+    // Check if row has any actual data
+    const rowData = data[i].filter(cell => cell !== null && cell !== undefined && String(cell).trim() !== "");
+    
+    if (rowData.length > 0) {
       employees.push(employee);
     }
   }
   
   return createResponse(true, `Retrieved ${employees.length} employees from "${sheetName}" with dynamic column mapping`, employees);
+}
+
+function getEmployeesFromAllSheets() {
+  const uniqueByName = new Map();
+  const sheets = AVAILABLE_SHEETS.filter(name => name !== "Summary");
+
+  for (let i = 0; i < sheets.length; i++) {
+    const sheetName = sheets[i];
+    const result = getEmployees(sheetName);
+
+    if (!result.success || !result.data) {
+      continue;
+    }
+
+    for (let j = 0; j < result.data.length; j++) {
+      const employee = result.data[j];
+      const nameKey = (employee.name || "").toString().trim().toLowerCase();
+
+      if (!nameKey) {
+        const fallbackKey = `${employee.id}-${employee.no}-${sheetName}-${j}`;
+        uniqueByName.set(fallbackKey, employee);
+        continue;
+      }
+
+      if (!uniqueByName.has(nameKey)) {
+        uniqueByName.set(nameKey, employee);
+      }
+    }
+  }
+
+  const employees = Array.from(uniqueByName.values());
+  return createResponse(true, `Retrieved ${employees.length} unique employees from all sheets`, employees);
 }
 
 /**
@@ -292,7 +388,8 @@ function getEmployeeById(id, sheetName = DEFAULT_SHEET) {
     return createResponse(false, "Sheet is empty", null);
   }
   
-  const headers = data[0];
+  const headerRowIndex = findHeaderRowIndex(data, 10);
+  const headers = data[headerRowIndex];
   
   // Find ID column
   let idColumnIndex = -1;

@@ -73,3 +73,112 @@ export const getUniversityStatistics = (employees: Employee[]) => {
     .sort((a, b) => b.value - a.value)
     .slice(0, 10);
 };
+
+export type ScholarStats = {
+  ongoingTeaching: number;
+  ongoingTeachingReinstatedPartTime: number;
+  ongoingAdmin: number;
+  totalOngoing: number;
+  completedTeaching: number;
+  completedAdmin: number;
+  totalCompleted: number;
+};
+
+const normalizeText = (value: unknown) =>
+  String(value ?? '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+const textHasAny = (value: unknown, keywords: string[]) => {
+  const text = normalizeText(value);
+  if (!text) return false;
+  return keywords.some((keyword) => text.includes(keyword));
+};
+
+const isTeachingRole = (emp: Employee) => {
+  const category = normalizeText(emp.categoryOfEmployment);
+  const rank = normalizeText(emp.currentRank);
+  const station = normalizeText(emp.officialStation);
+
+  return (
+    textHasAny(category, ['teaching', 'faculty', 'instruction']) ||
+    textHasAny(rank, ['prof', 'instructor', 'teacher']) ||
+    textHasAny(station, ['college', 'department', 'faculty'])
+  );
+};
+
+const isAdminRole = (emp: Employee) => {
+  const category = normalizeText(emp.categoryOfEmployment);
+  const rank = normalizeText(emp.currentRank);
+  const station = normalizeText(emp.officialStation);
+
+  return (
+    textHasAny(category, ['admin', 'administrative', 'non-teaching', 'staff']) ||
+    textHasAny(rank, ['admin', 'administrative', 'staff']) ||
+    textHasAny(station, ['office', 'administration', 'administrative'])
+  );
+};
+
+const isReinstatedOrPartTime = (emp: Employee) => {
+  const reinstatement = normalizeText(emp.reinstatement);
+  const status = normalizeText(emp.employmentStatus);
+  return (
+    textHasAny(reinstatement, ['yes', 'reinstated']) ||
+    textHasAny(status, ['part-time', 'part time', 'reinstated'])
+  );
+};
+
+const isCompleted = (emp: Employee) => {
+  const status = normalizeText(emp.schoolingStatus);
+  if (textHasAny(status, ['completed', 'graduated', 'finished'])) return true;
+  return Boolean(normalizeText(emp.graduationDate));
+};
+
+const isOngoing = (emp: Employee) => {
+  const status = normalizeText(emp.schoolingStatus);
+  if (textHasAny(status, ['ongoing', 'in progress', 'in-progress', 'currently enrolled', 'enrolled'])) {
+    return true;
+  }
+  return !isCompleted(emp) && Boolean(status);
+};
+
+export const computeEmployeeScholarStats = (employees: Employee[]): ScholarStats => {
+  const stats: ScholarStats = {
+    ongoingTeaching: 0,
+    ongoingTeachingReinstatedPartTime: 0,
+    ongoingAdmin: 0,
+    totalOngoing: 0,
+    completedTeaching: 0,
+    completedAdmin: 0,
+    totalCompleted: 0,
+  };
+
+  employees.forEach((emp) => {
+    const teaching = isTeachingRole(emp);
+    const admin = !teaching && isAdminRole(emp);
+    const ongoing = isOngoing(emp);
+    const completed = isCompleted(emp);
+
+    if (ongoing) {
+      if (teaching) {
+        stats.ongoingTeaching += 1;
+        if (isReinstatedOrPartTime(emp)) {
+          stats.ongoingTeachingReinstatedPartTime += 1;
+        }
+      } else if (admin) {
+        stats.ongoingAdmin += 1;
+      }
+    }
+
+    if (completed) {
+      if (teaching) {
+        stats.completedTeaching += 1;
+      } else if (admin) {
+        stats.completedAdmin += 1;
+      }
+    }
+  });
+
+  stats.totalOngoing = stats.ongoingTeaching + stats.ongoingTeachingReinstatedPartTime + stats.ongoingAdmin;
+  stats.totalCompleted = stats.completedTeaching + stats.completedAdmin;
+
+  return stats;
+};

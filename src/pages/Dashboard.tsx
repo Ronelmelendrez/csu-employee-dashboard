@@ -1,5 +1,6 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area } from 'recharts';
 import { ChartCard, SummaryCard } from '../components/ui/index';
+import { ScholarSummaryWidget } from '../components/ui/ScholarSummaryWidget';
 import { groupBy, toChartData, CHART_PALETTE } from '../utils/index';
 import { Employee } from '../types/employee';
 
@@ -38,6 +39,8 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
         <SummaryCard label="Contractual / COS" value={contractual} icon="📋" color="#f59e0b" sub={`${((contractual / total) * 100 || 0).toFixed(1)}% of total`} />
         <SummaryCard label="Connected with CSU" value={connected} icon="🏫" color="#0ea5e9" sub={`${((connected / total) * 100 || 0).toFixed(1)}% of total`} />
       </div>
+
+      <ScholarSummaryWidget />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20, marginBottom: 20 }}>
         <ChartCard title="Employment Status Distribution">

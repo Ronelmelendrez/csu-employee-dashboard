@@ -17,27 +17,49 @@ import { Employee } from '../types/employee';
  */
 export const headerVariations: Record<keyof Employee, string[]> = {
   id: [
-    'id',
+    'employee id number',
     'employee id',
     'emp id',
-    'no.',
-    'no',
-    '#',
+    'id',
     'employee number',
     'emp no',
     'staff number',
     'staff id'
   ],
   no: [
-    'no',
     'no.',
+    'no',
     '#',
     'employee no',
     'emp no',
     'number',
-    'emp number',
-    'staff no',
+    'row',
     'personnel no'
+  ],
+  dateOfBirth: [
+    'date of birth',
+    'dob',
+    'birth date',
+    'date born',
+    'birth',
+    'birthdate'
+  ],
+  name: [
+    'name',
+    'employee name',
+    'full name',
+    'first name',
+    'last name',
+    'person name',
+    'employee'
+  ],
+  address: [
+    'address',
+    'home address',
+    'residential address',
+    'street address',
+    'location',
+    'residence'
   ],
   currentRank: [
     'current rank',
@@ -83,13 +105,13 @@ export const headerVariations: Record<keyof Employee, string[]> = {
   ],
   courseProgram: [
     'course program',
+    'course/ program',
     'program',
     'course',
     'degree',
     'qualification',
     'program course',
-    'educational program',
-    'course program name'
+    'educational program'
   ],
   fundingSource: [
     'funding source',
@@ -102,12 +124,13 @@ export const headerVariations: Record<keyof Employee, string[]> = {
   ],
   universityAttended: [
     'university attended',
+    'university attended/dhei',
     'university',
     'institution',
     'educational institution',
     'school',
-    'university/institution',
-    'college'
+    'college',
+    'dhei'
   ],
   contractDuration: [
     'contract duration',
@@ -116,8 +139,19 @@ export const headerVariations: Record<keyof Employee, string[]> = {
     'contract term',
     'term',
     'contract length',
-    'contract tenure',
-    'duration period'
+    'contract tenure'
+  ],
+  leaveOfAbsence: [
+    'leave of absence',
+    'leave absence',
+    'absence',
+    'leave'
+  ],
+  resolutionOfStudyLeave: [
+    'resumption of study leave',
+    'resolution study leave',
+    'study leave',
+    'resumption'
   ],
   reinstatement: [
     'reinstatement',
@@ -146,15 +180,42 @@ export const headerVariations: Record<keyof Employee, string[]> = {
     'grad year',
     'graduation year'
   ],
+  clothingAllowanceAndPBB: [
+    'clothing allowance and pbb',
+    'clothing allowance',
+    'pbb',
+    'allowance pbb',
+    'clothing pbb'
+  ],
   connectedWithCSU: [
+    'still connected with csu',
     'connected with csu',
     'connected',
     'csu connection',
     'affiliation',
     'csu affiliated',
-    'connected to csu',
     'csu affiliation',
-    'connected with university'
+    'connected to csu'
+  ],
+  returnService: [
+    'return service',
+    'return svc',
+    'return',
+    'service return'
+  ],
+  enrolled: [
+    'enrolled',
+    'enrollment',
+    'enroll'
+  ],
+  remarks: [
+    'remarks',
+    'notes',
+    'comment',
+    'comments',
+    'note',
+    'observation',
+    'annotation'
   ]
 };
 
@@ -607,6 +668,9 @@ export async function parseExcelToEmployees(file: File): Promise<Employee[]> {
           const completeEmployee: Employee = {
             id: employee.id ?? autoId - 1,
             no: employee.no ?? '',
+            dateOfBirth: employee.dateOfBirth ?? '',
+            name: employee.name ?? '',
+            address: employee.address ?? '',
             currentRank: employee.currentRank ?? '',
             officialStation: employee.officialStation ?? '',
             categoryOfEmployment: employee.categoryOfEmployment ?? '',
@@ -615,10 +679,16 @@ export async function parseExcelToEmployees(file: File): Promise<Employee[]> {
             fundingSource: employee.fundingSource ?? '',
             universityAttended: employee.universityAttended ?? '',
             contractDuration: employee.contractDuration ?? '',
+            leaveOfAbsence: employee.leaveOfAbsence ?? '',
+            resolutionOfStudyLeave: employee.resolutionOfStudyLeave ?? '',
             reinstatement: employee.reinstatement ?? '',
             schoolingStatus: employee.schoolingStatus ?? '',
             graduationDate: employee.graduationDate ?? '',
-            connectedWithCSU: employee.connectedWithCSU ?? ''
+            clothingAllowanceAndPBB: employee.clothingAllowanceAndPBB ?? '',
+            connectedWithCSU: employee.connectedWithCSU ?? '',
+            returnService: employee.returnService ?? '',
+            enrolled: employee.enrolled ?? '',
+            remarks: employee.remarks ?? ''
           };
 
           employees.push(completeEmployee);

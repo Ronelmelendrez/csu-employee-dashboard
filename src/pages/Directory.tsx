@@ -107,7 +107,7 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
                 <tr><td colSpan={COLS.length} style={{ padding: "40px", textAlign: "center", color: "var(--muted)" }}>No employees match your filters.</td></tr>
               )}
               {paged.map((emp, i) => (
-                <tr key={emp.id} onClick={() => onSelectEmployee(emp)}
+                <tr key={`${emp.id}-${emp.no}-${i}`} onClick={() => onSelectEmployee(emp)}
                   style={{ borderBottom: "1px solid var(--border)", cursor: "pointer", background: i % 2 === 0 ? "transparent" : "var(--bg)", transition: "background 0.12s" }}
                   onMouseEnter={e => e.currentTarget.style.background = "var(--hover)"}
                   onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? "transparent" : "var(--bg)"}
@@ -135,7 +135,7 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ ...selStyle, opacity: page === 1 ? 0.4 : 1 }}>← Prev</button>
               {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
                 const p = totalPages <= 7 ? i + 1 : i === 0 ? 1 : i === 6 ? totalPages : page - 3 + i;
-                return <button key={p} onClick={() => setPage(p)} style={{ ...selStyle, background: p === page ? "#10b981" : "var(--bg)", color: p === page ? "#fff" : "var(--text)", fontWeight: p === page ? 700 : 400 }}>{p}</button>;
+                return <button key={`${p}-${i}`} onClick={() => setPage(p)} style={{ ...selStyle, background: p === page ? "#10b981" : "var(--bg)", color: p === page ? "#fff" : "var(--text)", fontWeight: p === page ? 700 : 400 }}>{p}</button>;
               })}
               <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ ...selStyle, opacity: page === totalPages ? 0.4 : 1 }}>Next →</button>
             </div>

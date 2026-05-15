@@ -1,6 +1,9 @@
 export interface Employee {
   id: number;
   no?: string | number;
+  dateOfBirth?: string;
+  name?: string;
+  address?: string;
   currentRank: string;
   officialStation: string;
   categoryOfEmployment: string;
@@ -9,10 +12,16 @@ export interface Employee {
   fundingSource: string;
   universityAttended: string;
   contractDuration: string;
+  leaveOfAbsence?: string;
+  resolutionOfStudyLeave?: string;
   reinstatement: string;
   schoolingStatus: string;
   graduationDate: string;
+  clothingAllowanceAndPBB?: string;
   connectedWithCSU: string;
+  returnService?: string;
+  enrolled?: string;
+  remarks?: string;
 }
 
 export interface EmployeeStats {
