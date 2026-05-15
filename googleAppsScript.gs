@@ -13,49 +13,60 @@
 
 // Configuration - UPDATE THIS WITH YOUR SHEET ID
 const SPREADSHEET_ID = "YOUR_GOOGLE_SHEET_ID_HERE";
-const SHEET_NAME = "Employees";
+const DEFAULT_SHEET = "Masterlist"; // Main sheet to read from
+
+// Available sheets in your spreadsheet
+const AVAILABLE_SHEETS = [
+  "Masterlist",
+  "2021-2025",
+  "2021-2025(2)",
+  "2023-2024",
+  "CMNS-CED",
+  "Faculty - ongoing",
+  "admin-ongoing"
+];
 
 /**
- * Initialize the spreadsheet with headers and sample data
+ * Initialize the default sheet with headers
  */
 function initializeSheet() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  let sheet = ss.getSheetByName(SHEET_NAME);
+  let sheet = ss.getSheetByName(DEFAULT_SHEET);
   
   if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
+    sheet = ss.insertSheet(DEFAULT_SHEET);
   }
   
-  // Clear existing data
-  sheet.clear();
-  
-  // Set up headers
-  const headers = [
-    "id",
-    "currentRank",
-    "officialStation",
-    "categoryOfEmployment",
-    "employmentStatus",
-    "courseProgram",
-    "fundingSource",
-    "universityAttended",
-    "contractDuration",
-    "reinstatement",
-    "schoolingStatus",
-    "graduationDate",
-    "connectedWithCSU"
-  ];
-  
-  sheet.appendRow(headers);
-  
-  // Format header row
-  const headerRange = sheet.getRange(1, 1, 1, headers.length);
-  headerRange.setBackground("#1f2937");
-  headerRange.setFontColor("#ffffff");
-  headerRange.setFontWeight("bold");
-  
-  // Auto-resize columns
-  sheet.autoResizeColumns(1, headers.length);
+  // Only clear if empty (don't destroy existing data)
+  if (sheet.getLastRow() === 0) {
+    // Set up headers
+    const headers = [
+      "id",
+      "currentRank",
+      "officialStation",
+      "categoryOfEmployment",
+      "employmentStatus",
+      "courseProgram",
+      "fundingSource",
+      "universityAttended",
+      "contractDuration",
+      "reinstatement",
+      "schoolingStatus",
+      "graduationDate",
+      "connectedWithCSU"
+    ];
+    
+    sheet.appendRow(headers);
+    
+    // Format header row
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground("#1f2937");
+    headerRange.setFontColor("#ffffff");
+    headerRange.setFontWeight("bold");
+    
+    // Auto-resize columns
+    sheet.autoResizeColumns(1, headers.length);
+  }
 }
 
 /**
@@ -63,12 +74,15 @@ function initializeSheet() {
  */
 function doGet(e) {
   const action = e.parameter.action || "getAll";
+  const sheetName = e.parameter.sheet || DEFAULT_SHEET;
   
   try {
     if (action === "getAll") {
-      return getEmployees();
+      return getEmployees(sheetName);
     } else if (action === "getById") {
-      return getEmployeeById(e.parameter.id);
+      return getEmployeeById(e.parameter.id, sheetName);
+    } else if (action === "getSheets") {
+      return getAvailableSheets();
     } else {
       return createResponse(false, "Unknown action", null);
     }
@@ -82,20 +96,21 @@ function doGet(e) {
  */
 function doPost(e) {
   const action = e.parameter.action || "add";
+  const sheetName = e.parameter.sheet || DEFAULT_SHEET;
   
   try {
     if (action === "add") {
       const data = JSON.parse(e.postData.contents);
-      return addEmployee(data);
+      return addEmployee(data, sheetName);
     } else if (action === "update") {
       const data = JSON.parse(e.postData.contents);
-      return updateEmployee(data);
+      return updateEmployee(data, sheetName);
     } else if (action === "delete") {
       const data = JSON.parse(e.postData.contents);
-      return deleteEmployee(data.id);
+      return deleteEmployee(data.id, sheetName);
     } else if (action === "sync") {
       const data = JSON.parse(e.postData.contents);
-      return syncEmployees(data);
+      return syncEmployees(data, sheetName);
     } else {
       return createResponse(false, "Unknown action", null);
     }
@@ -105,17 +120,21 @@ function doPost(e) {
 }
 
 /**
- * Get all employees from the sheet
+ * Get all employees from a specific sheet
  */
-function getEmployees() {
+function getEmployees(sheetName = DEFAULT_SHEET) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  const sheet = ss.getSheetByName(sheetName);
   
   if (!sheet) {
-    return createResponse(false, "Sheet not found", null);
+    return createResponse(false, `Sheet "${sheetName}" not found`, null);
   }
   
   const data = sheet.getDataRange().getValues();
+  if (data.length === 0) {
+    return createResponse(true, "No employees found", []);
+  }
+  
   const headers = data[0];
   const employees = [];
   
@@ -127,19 +146,31 @@ function getEmployees() {
     employees.push(employee);
   }
   
-  return createResponse(true, "Employees retrieved successfully", employees);
+  return createResponse(true, `Retrieved ${employees.length} employees from "${sheetName}"`, employees);
 }
 
 /**
- * Get a single employee by ID
+ * Get a single employee by ID from a specific sheet
  */
-function getEmployeeById(id) {
+function getEmployeeById(id, sheetName = DEFAULT_SHEET) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  const sheet = ss.getSheetByName(sheetName);
+  
+  if (!sheet) {
+    return createResponse(false, `Sheet "${sheetName}" not found`, null);
+  }
   
   const data = sheet.getDataRange().getValues();
+  if (data.length === 0) {
+    return createResponse(false, "Sheet is empty", null);
+  }
+  
   const headers = data[0];
   const idIndex = headers.indexOf("id");
+  
+  if (idIndex === -1) {
+    return createResponse(false, "Column 'id' not found in sheet", null);
+  }
   
   for (let i = 1; i < data.length; i++) {
     if (data[i][idIndex] == id) {
@@ -147,7 +178,7 @@ function getEmployeeById(id) {
       for (let j = 0; j < headers.length; j++) {
         employee[headers[j]] = data[i][j];
       }
-      return createResponse(true, "Employee found", employee);
+      return createResponse(true, `Employee found in "${sheetName}"`, employee);
     }
   }
   
@@ -155,23 +186,25 @@ function getEmployeeById(id) {
 }
 
 /**
- * Add a new employee
+ * Add a new employee to a specific sheet
  */
-function addEmployee(employee) {
+function addEmployee(employee, sheetName = DEFAULT_SHEET) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  let sheet = ss.getSheetByName(SHEET_NAME);
+  let sheet = ss.getSheetByName(sheetName);
   
   if (!sheet) {
-    initializeSheet();
-    sheet = ss.getSheetByName(SHEET_NAME);
+    return createResponse(false, `Sheet "${sheetName}" not found`, null);
   }
   
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const data = sheet.getDataRange().getValues();
+  if (data.length === 0) {
+    return createResponse(false, `Sheet "${sheetName}" has no headers`, null);
+  }
+  
+  const headers = data[0];
   
   // Generate ID if not provided
   if (!employee.id) {
-    const lastRow = sheet.getLastRow();
-    const data = sheet.getDataRange().getValues();
     const maxId = Math.max(...data.slice(1).map(row => parseInt(row[0]) || 0));
     employee.id = maxId + 1;
   }
@@ -179,19 +212,27 @@ function addEmployee(employee) {
   const row = headers.map(header => employee[header] || "");
   sheet.appendRow(row);
   
-  return createResponse(true, "Employee added successfully", employee);
+  return createResponse(true, `Employee added to "${sheetName}"`, employee);
 }
 
 /**
- * Update an existing employee
+ * Update an existing employee in a specific sheet
  */
-function updateEmployee(employee) {
+function updateEmployee(employee, sheetName = DEFAULT_SHEET) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  const sheet = ss.getSheetByName(sheetName);
+  
+  if (!sheet) {
+    return createResponse(false, `Sheet "${sheetName}" not found`, null);
+  }
   
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   const idIndex = headers.indexOf("id");
+  
+  if (idIndex === -1) {
+    return createResponse(false, "Column 'id' not found in sheet", null);
+  }
   
   for (let i = 1; i < data.length; i++) {
     if (data[i][idIndex] == employee.id) {
@@ -199,7 +240,7 @@ function updateEmployee(employee) {
         const newValue = employee[headers[j]] !== undefined ? employee[headers[j]] : data[i][j];
         sheet.getRange(i + 1, j + 1).setValue(newValue);
       }
-      return createResponse(true, "Employee updated successfully", employee);
+      return createResponse(true, `Employee updated in "${sheetName}"`, employee);
     }
   }
   
@@ -207,20 +248,28 @@ function updateEmployee(employee) {
 }
 
 /**
- * Delete an employee by ID
+ * Delete an employee by ID from a specific sheet
  */
-function deleteEmployee(id) {
+function deleteEmployee(id, sheetName = DEFAULT_SHEET) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  const sheet = ss.getSheetByName(sheetName);
+  
+  if (!sheet) {
+    return createResponse(false, `Sheet "${sheetName}" not found`, null);
+  }
   
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   const idIndex = headers.indexOf("id");
   
+  if (idIndex === -1) {
+    return createResponse(false, "Column 'id' not found in sheet", null);
+  }
+  
   for (let i = 1; i < data.length; i++) {
     if (data[i][idIndex] == id) {
       sheet.deleteRow(i + 1);
-      return createResponse(true, "Employee deleted successfully", { id: id });
+      return createResponse(true, `Employee deleted from "${sheetName}"`, { id: id });
     }
   }
   
@@ -228,15 +277,14 @@ function deleteEmployee(id) {
 }
 
 /**
- * Bulk sync employees (replace all data)
+ * Bulk sync employees to a specific sheet (replace all data)
  */
-function syncEmployees(employees) {
+function syncEmployees(employees, sheetName = DEFAULT_SHEET) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  let sheet = ss.getSheetByName(SHEET_NAME);
+  let sheet = ss.getSheetByName(sheetName);
   
   if (!sheet) {
-    initializeSheet();
-    sheet = ss.getSheetByName(SHEET_NAME);
+    return createResponse(false, `Sheet "${sheetName}" not found`, null);
   }
   
   // Keep headers, delete all data rows
@@ -245,7 +293,8 @@ function syncEmployees(employees) {
     sheet.deleteRows(2, lastRow - 1);
   }
   
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
   
   // Add new employees
   for (let emp of employees) {
@@ -253,9 +302,26 @@ function syncEmployees(employees) {
     sheet.appendRow(row);
   }
   
-  return createResponse(true, "Employees synced successfully", {
-    count: employees.length
+  return createResponse(true, `Synced ${employees.length} employees to "${sheetName}"`, {
+    count: employees.length,
+    sheet: sheetName
   });
+}
+
+/**
+ * Get list of available sheets with their row counts
+ */
+function getAvailableSheets() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheets = ss.getSheets();
+  
+  const sheetList = sheets.map(sheet => ({
+    name: sheet.getName(),
+    rows: sheet.getLastRow(),
+    isDefault: sheet.getName() === DEFAULT_SHEET
+  }));
+  
+  return createResponse(true, "Available sheets", sheetList);
 }
 
 /**
@@ -277,6 +343,22 @@ function createResponse(success, message, data) {
  * Test function to verify the script is working
  */
 function testScript() {
-  const result = getEmployees();
-  Logger.log(result);
+  // Test available sheets
+  Logger.log("=== Available Sheets ===");
+  const sheets = getAvailableSheets();
+  Logger.log(sheets);
+  
+  // Test reading from Masterlist
+  Logger.log("\n=== Reading from Masterlist ===");
+  const employees = getEmployees("Masterlist");
+  Logger.log(employees);
+  
+  // Test reading from other sheets
+  Logger.log("\n=== Checking sheet data ===");
+  for (let sheetName of AVAILABLE_SHEETS) {
+    const result = getEmployees(sheetName);
+    if (result.data && result.data.length > 0) {
+      Logger.log(`${sheetName}: ${result.data.length} employees`);
+    }
+  }
 }

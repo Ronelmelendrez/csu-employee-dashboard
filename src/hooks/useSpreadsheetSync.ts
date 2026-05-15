@@ -13,6 +13,7 @@ export interface UseSpreadsheetSyncOptions {
   appScriptUrl: string;
   autoSync?: boolean;
   syncInterval?: number;
+  sheetName?: string;
   onSyncSuccess?: (employees: Employee[]) => void;
   onSyncError?: (error: Error) => void;
 }
@@ -22,6 +23,7 @@ export interface UseSpreadsheetSyncResult {
   loading: boolean;
   error: Error | null;
   isConnected: boolean;
+  currentSheet: string;
   
   // Methods
   sync: () => Promise<void>;
@@ -29,6 +31,8 @@ export interface UseSpreadsheetSyncResult {
   updateEmployee: (employee: Employee) => Promise<boolean>;
   deleteEmployee: (id: number) => Promise<boolean>;
   syncAll: (employees: Employee[]) => Promise<boolean>;
+  switchSheet: (sheetName: string) => Promise<void>;
+  getAvailableSheets: () => Promise<Array<{ name: string; rows: number; isDefault: boolean }>>;
 }
 
 export function useSpreadsheetSync(
@@ -38,6 +42,7 @@ export function useSpreadsheetSync(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [currentSheet, setCurrentSheet] = useState(options.sheetName ?? "Masterlist");
 
   const syncRef = useRef<SpreadsheetSync | null>(null);
 
@@ -48,7 +53,8 @@ export function useSpreadsheetSync(
         syncRef.current = new SpreadsheetSync({
           appScriptUrl: options.appScriptUrl,
           autoSync: options.autoSync ?? false,
-          syncInterval: options.syncInterval ?? 60000
+          syncInterval: options.syncInterval ?? 60000,
+          sheetName: options.sheetName ?? "Masterlist"
         });
 
         // Validate connection
@@ -81,7 +87,7 @@ export function useSpreadsheetSync(
         syncRef.current.stopAutoSync();
       }
     };
-  }, [options.appScriptUrl, options.autoSync, options.syncInterval]);
+  }, [options.appScriptUrl, options.autoSync, options.syncInterval, options.sheetName]);
 
   // Sync all employees
   const sync = useCallback(async () => {
@@ -212,16 +218,61 @@ export function useSpreadsheetSync(
     [options]
   );
 
+  // Switch to a different sheet
+  const switchSheet = useCallback(
+    async (sheetName: string) => {
+      if (!syncRef.current) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        syncRef.current.setSheetName(sheetName);
+        setCurrentSheet(sheetName);
+
+        const data = await syncRef.current.fetchEmployees();
+        setEmployees(data);
+        options.onSyncSuccess?.(data);
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        setError(error);
+        options.onSyncError?.(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [options]
+  );
+
+  // Get available sheets
+  const getAvailableSheets = useCallback(
+    async () => {
+      if (!syncRef.current) return [];
+
+      try {
+        const sheets = await syncRef.current.getAvailableSheets();
+        return sheets;
+      } catch (err) {
+        console.error("Error fetching sheets:", err);
+        return [];
+      }
+    },
+    []
+  );
+
   return {
     employees,
     loading,
     error,
     isConnected,
+    currentSheet,
     sync,
     addEmployee,
     updateEmployee,
     deleteEmployee,
-    syncAll
+    syncAll,
+    switchSheet,
+    getAvailableSheets
   };
 }
 
