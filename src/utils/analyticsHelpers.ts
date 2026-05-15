@@ -94,7 +94,7 @@ const normalizeText = (value: unknown) =>
 const textHasAny = (value: unknown, keywords: string[]) => {
   const text = normalizeText(value);
   if (!text) return false;
-  return keywords.some((keyword) => text.includes(keyword));
+  return keywords.some((keyword) => text.includes(normalizeText(keyword)));
 };
 
 const isTeachingRole = (emp: Employee) => {

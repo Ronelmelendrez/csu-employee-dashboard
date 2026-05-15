@@ -26,11 +26,11 @@ const DEFAULT_SHEET = "Masterlist"; // Main sheet to read from
 const AVAILABLE_SHEETS = [
   "Masterlist",
   "2021-2025",
-  "2021-2025(2)",
+  "2021-2025 (2)",
   "2023-2024",
   "CMNS-CED",
   "Faculty - ongoing",
-  "admin-ongoing"
+  "Admin-ongoing"
 ];
 
 /**
