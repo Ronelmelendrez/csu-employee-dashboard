@@ -12,7 +12,16 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
 
   const statusData = toChartData(groupBy(employees, "employmentStatus"));
   const stationData = toChartData(groupBy(employees, "officialStation")).slice(0, 8);
-  const categoryData = toChartData(groupBy(employees, "categoryOfEmployment"));
+  const uniqueByName = Array.from(
+    employees.reduce((map, emp) => {
+      const key = (emp.name || "").toString().trim().toLowerCase();
+      if (key && !map.has(key)) {
+        map.set(key, emp);
+      }
+      return map;
+    }, new Map<string, Employee>())
+  );
+  const categoryData = toChartData(groupBy(uniqueByName, "categoryOfEmployment"));
 
   // graduation year trend
   const gradYears: Record<string, number> = {};
