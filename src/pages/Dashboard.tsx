@@ -13,8 +13,8 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
   const statusData = toChartData(groupBy(employees, "employmentStatus"));
   const stationData = toChartData(groupBy(employees, "officialStation")).slice(0, 8);
   const uniqueByName = Array.from(
-    employees.reduce((map, emp) => {
-      const key = (emp.name || "").toString().trim().toLowerCase();
+    employees.reduce((map, emp, idx) => {
+      const key = (emp.name || "").toString().trim().toLowerCase() || `emp_${idx}`;
       if (key && !map.has(key)) {
         map.set(key, emp);
       }

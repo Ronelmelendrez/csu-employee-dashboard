@@ -58,7 +58,7 @@ const COLUMN_MAPPING = {
   schoolingStatus: ["SCHOOLING STATUS", "schooling status", "SCHOOL STATUS", "school status", "education status", "EDUCATION STATUS"],
   graduationDate: ["GRADUATION DATE", "graduation date", "GRAD DATE", "grad date", "date graduated", "DATE GRADUATED"],
   clothingAllowanceAndPBB: ["CLOTHING ALLOWANCE AND PBB", "clothing allowance and pbb", "CLOTHING ALLOWANCE", "clothing allowance", "PBB", "pbb"],
-  connectedWithCSU: ["Still connected with CSU?", "Still connected with CSU? As of 2025", "CONNECTED WITH CSU", "connected with csu", "CONNECTED", "connected", "CSU CONNECTION", "csu connection"],
+  connectedWithCSU: ["Still connected with CSU?", "Still connected with CSU? As of 2025", "CONNECTED WITH CSU", "connected with csu", "CONNECTED", "connected", "CSU CONNECTION", "csu connection", "Still connected", "still connected", "Connection", "CONNECTION", "connection", "Still Connected with CSU", "Still connected with CSU"],
   returnService: ["RETURN SERVICE", "return service", "RETURN SVC", "return svc", "return", "RETURN"],
   enrolled: ["Enrolled?", "ENROLLED?", "enrolled?", "ENROLLED", "enrolled", "enrollment", "ENROLLMENT"],
   remarks: ["REMARKS", "remarks", "NOTES", "notes", "comment", "COMMENT", "comments", "COMMENTS"]
@@ -129,9 +129,22 @@ function formatDate(value) {
 function normalizeYesNo(value) {
   if (value === null || value === undefined) return "";
   const text = String(value).trim().toLowerCase();
+  
+  // Log for debugging
+  console.log(`normalizeYesNo input: "${value}" (type: ${typeof value}), normalized text: "${text}"`);
 
-  if (["yes", "y", "true", "1"].includes(text)) return "Yes";
-  if (["no", "n", "false", "0"].includes(text)) return "No";
+  if (["yes", "y", "true", "1"].includes(text)) {
+    console.log(`Returning: "Yes"`);
+    return "Yes";
+  }
+  if (["no", "n", "false", "0"].includes(text)) {
+    console.log(`Returning: "No"`);
+    return "No";
+  }
+  if (["deceased", "death", "deceased"].includes(text)) {
+    console.log(`Returning: "Deceased"`);
+    return "Deceased";
+  }
 
   return String(value).trim();
 }
@@ -148,11 +161,18 @@ function rowToEmployee(headers, values) {
     const fieldName = getFieldNameForHeader(header);
     
     if (fieldName) {
+      // Log if we're processing the connectedWithCSU field
+      if (fieldName === "connectedWithCSU") {
+        console.log(`Processing connectedWithCSU column: header="${header}", value="${value}"`);
+      }
+      
       // Special handling for date fields
       if (fieldName === "graduationDate") {
         employee[fieldName] = formatDate(value);
       } else if (fieldName === "connectedWithCSU") {
-        employee[fieldName] = normalizeYesNo(value);
+        const normalized = normalizeYesNo(value);
+        console.log(`Set connectedWithCSU to: "${normalized}"`);
+        employee[fieldName] = normalized;
       } else {
         employee[fieldName] = value !== undefined ? String(value).trim() : "";
       }

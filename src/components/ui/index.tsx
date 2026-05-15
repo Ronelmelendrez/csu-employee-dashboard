@@ -86,8 +86,8 @@ export function EmployeeDrawer({ employee, onClose }: { employee: Employee | nul
         </div>
         <div style={{ padding: "16px 24px", display: "flex", gap: 8, flexWrap: "wrap" }}>
           <StatusBadge status={employee.employmentStatus} />
-          <span style={{ background: employee.connectedWithCSU === "Yes" ? "#10b98122" : "#ef444422", color: employee.connectedWithCSU === "Yes" ? "#10b981" : "#ef4444", border: `1px solid ${employee.connectedWithCSU === "Yes" ? "#10b98155" : "#ef444455"}`, borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 600 }}>
-            {employee.connectedWithCSU === "Yes" ? "✓ Connected" : "✗ Not Connected"}
+          <span style={{ background: employee.connectedWithCSU === "Yes" ? "#10b98122" : employee.connectedWithCSU === "Deceased" ? "#8b5cf622" : "#ef444422", color: employee.connectedWithCSU === "Yes" ? "#10b981" : employee.connectedWithCSU === "Deceased" ? "#8b5cf6" : "#ef4444", border: `1px solid ${employee.connectedWithCSU === "Yes" ? "#10b98155" : employee.connectedWithCSU === "Deceased" ? "#8b5cf655" : "#ef444455"}`, borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 600 }}>
+            {employee.connectedWithCSU === "Yes" ? "✓ Connected" : employee.connectedWithCSU === "Deceased" ? "† Deceased" : "✗ Not Connected"}
           </span>
         </div>
         <div style={{ flex: 1, overflow: "auto", padding: "0 24px 24px" }}>

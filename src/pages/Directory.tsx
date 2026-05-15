@@ -124,7 +124,9 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
                   <td style={{ padding: "10px 14px", color: "var(--muted)" }}>{emp.courseProgram}</td>
                   <td style={{ padding: "10px 14px", color: "var(--muted)" }}>{emp.schoolingStatus}</td>
                   <td style={{ padding: "10px 14px" }}>
-                    <span style={{ color: emp.connectedWithCSU === "Yes" ? "#10b981" : "#ef4444", fontWeight: 700 }}>{emp.connectedWithCSU === "Yes" ? "✓" : "✗"}</span>
+                    <span style={{ color: emp.connectedWithCSU === "Yes" ? "#10b981" : emp.connectedWithCSU === "Deceased" ? "#8b5cf6" : "#ef4444", fontWeight: 700 }}>
+                      {emp.connectedWithCSU === "Yes" ? "✓" : emp.connectedWithCSU === "Deceased" ? "†" : "✗"}
+                    </span>
                   </td>
                 </tr>
               ))}
