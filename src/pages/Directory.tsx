@@ -35,6 +35,10 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const maxPageButtons = 7;
+  const pageWindowStart = Math.max(1, Math.min(page - Math.floor(maxPageButtons / 2), totalPages - maxPageButtons + 1));
+  const pageWindowEnd = Math.min(totalPages, pageWindowStart + maxPageButtons - 1);
+  const pageWindow = Array.from({ length: Math.max(0, pageWindowEnd - pageWindowStart + 1) }, (_, i) => pageWindowStart + i);
 
   const handleSort = (key: string) => {
     if (sortKey === key) setSortDir(d => -d);
@@ -133,10 +137,9 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
             <span style={{ fontSize: 12, color: "var(--muted)" }}>Page {page} of {totalPages} · {filtered.length} results</span>
             <div style={{ display: "flex", gap: 6 }}>
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ ...selStyle, opacity: page === 1 ? 0.4 : 1 }}>← Prev</button>
-              {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                const p = totalPages <= 7 ? i + 1 : i === 0 ? 1 : i === 6 ? totalPages : page - 3 + i;
-                return <button key={`${p}-${i}`} onClick={() => setPage(p)} style={{ ...selStyle, background: p === page ? "#10b981" : "var(--bg)", color: p === page ? "#fff" : "var(--text)", fontWeight: p === page ? 700 : 400 }}>{p}</button>;
-              })}
+              {pageWindow.map((p) => (
+                <button key={p} onClick={() => setPage(p)} style={{ ...selStyle, background: p === page ? "#10b981" : "var(--bg)", color: p === page ? "#fff" : "var(--text)", fontWeight: p === page ? 700 : 400 }}>{p}</button>
+              ))}
               <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ ...selStyle, opacity: page === totalPages ? 0.4 : 1 }}>Next →</button>
             </div>
           </div>
