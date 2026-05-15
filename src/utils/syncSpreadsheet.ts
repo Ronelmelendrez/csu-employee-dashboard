@@ -17,7 +17,7 @@ class SpreadsheetSync {
   private appScriptUrl: string;
   private autoSync: boolean = false;
   private syncInterval: number = 60000; // 1 minute default
-  private syncTimer: NodeJS.Timeout | null = null;
+  private syncTimer: ReturnType<typeof setInterval> | null = null;
   private sheetName: string = "Masterlist"; // Default sheet
 
   constructor(config: SyncConfig) {
