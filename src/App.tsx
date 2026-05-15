@@ -16,7 +16,7 @@ export default function App() {
   // Initialize Google Sheets sync
   const { employees, loading, error, syncFromSheet } = useGoogleSheetsSync({
     webAppUrl: import.meta.env.VITE_GOOGLE_SHEETS_URL || "",
-    defaultSheetName: "Masterlist",
+    defaultSheetName: "ALL",
     onSuccess: (data) => console.log(`✓ Synced ${data.length} employees`),
     onError: (err) => console.error(`✗ Sync failed: ${err}`),
   });
@@ -24,7 +24,7 @@ export default function App() {
   // Fetch data on mount
   useEffect(() => {
     if (import.meta.env.VITE_GOOGLE_SHEETS_URL) {
-      syncFromSheet("Masterlist");
+      syncFromSheet("ALL");
     } else {
       console.warn("⚠️  VITE_GOOGLE_SHEETS_URL not configured in .env.local");
     }

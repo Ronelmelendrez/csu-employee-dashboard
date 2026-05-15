@@ -101,7 +101,7 @@ const isTeachingRole = (emp: Employee) => {
 const isAdminRole = (emp: Employee) => {
   const category = normalizeText(emp.categoryOfEmployment);
   if (!category) return false;
-  return textHasAny(category, ['non-teaching', 'non teaching', 'admin', 'administrative']);
+  return textHasAny(category, ['non-teaching', 'non teaching']);
 };
 
 const isReinstatedOrPartTime = (emp: Employee) => {

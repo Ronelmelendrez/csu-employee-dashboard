@@ -21,6 +21,8 @@ export interface SheetInfo {
   isDefault: boolean;
 }
 
+export const ALL_SHEETS = "ALL";
+
 /**
  * Validate that an object matches the Employee interface
  */
@@ -102,7 +104,7 @@ function ensureEmployeeShape(obj: any): Employee {
  */
 export async function fetchEmployeesFromGoogleSheets(
   webAppUrl: string,
-  sheetName: string = "Masterlist"
+  sheetName: string = ALL_SHEETS
 ): Promise<FetchResult> {
   if (!webAppUrl) {
     return {

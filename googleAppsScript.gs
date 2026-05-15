@@ -341,23 +341,38 @@ function getEmployees(sheetName = DEFAULT_SHEET) {
 }
 
 function getEmployeesFromAllSheets() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const uniqueByName = new Map();
   const sheets = AVAILABLE_SHEETS.filter(name => name !== "Summary");
 
   for (let i = 0; i < sheets.length; i++) {
     const sheetName = sheets[i];
-    const result = getEmployees(sheetName);
+    const sheet = ss.getSheetByName(sheetName);
+    if (!sheet) continue;
 
-    if (!result.success || !result.data) {
-      continue;
-    }
+    const data = sheet.getDataRange().getValues();
+    if (data.length === 0) continue;
 
-    for (let j = 0; j < result.data.length; j++) {
-      const employee = result.data[j];
+    const headerRowIndex = findHeaderRowIndex(data, 10);
+    const headers = data[headerRowIndex];
+    let autoId = 1;
+
+    for (let r = headerRowIndex + 1; r < data.length; r++) {
+      const employee = rowToEmployee(headers, data[r]);
+
+      if (!employee.id || employee.id === "" || employee.id === 0) {
+        employee.id = autoId;
+        autoId++;
+      } else {
+        autoId = Math.max(autoId, parseInt(employee.id) || 0) + 1;
+      }
+
+      const rowData = data[r].filter(cell => cell !== null && cell !== undefined && String(cell).trim() !== "");
+      if (rowData.length === 0) continue;
+
       const nameKey = (employee.name || "").toString().trim().toLowerCase();
-
       if (!nameKey) {
-        const fallbackKey = `${employee.id}-${employee.no}-${sheetName}-${j}`;
+        const fallbackKey = `${employee.id}-${employee.no}-${sheetName}-${r}`;
         uniqueByName.set(fallbackKey, employee);
         continue;
       }
