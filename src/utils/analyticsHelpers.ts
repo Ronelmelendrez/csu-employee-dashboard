@@ -99,6 +99,8 @@ const textHasAny = (value: unknown, keywords: string[]) => {
 
 const isTeachingRole = (emp: Employee) => {
   const category = normalizeText(emp.categoryOfEmployment);
+  if (!category) return false;
+  if (textHasAny(category, ['non teaching', 'non-teaching'])) return false;
   return textHasAny(category, ['teaching']);
 };
 
