@@ -85,7 +85,11 @@ export type ScholarStats = {
 };
 
 const normalizeText = (value: unknown) =>
-  String(value ?? '').toLowerCase().replace(/\s+/g, ' ').trim();
+  String(value ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 const textHasAny = (value: unknown, keywords: string[]) => {
   const text = normalizeText(value);
