@@ -93,28 +93,25 @@ const textHasAny = (value: unknown, keywords: string[]) => {
   return keywords.some((keyword) => text.includes(keyword));
 };
 
-const isTeachingRole = (emp: Employee) => {
-  const category = normalizeText(emp.categoryOfEmployment);
-  const rank = normalizeText(emp.currentRank);
-  const station = normalizeText(emp.officialStation);
+const TEACHING_STATIONS = new Set([
+  'ccis',
+  'caa',
+  'cofes',
+  'chass',
+  'cegs',
+  'ced',
+  'cmns'
+]);
 
-  return (
-    textHasAny(category, ['teaching', 'faculty', 'instruction']) ||
-    textHasAny(rank, ['prof', 'instructor', 'teacher']) ||
-    textHasAny(station, ['college', 'department', 'faculty'])
-  );
+const isTeachingRole = (emp: Employee) => {
+  const station = normalizeText(emp.officialStation);
+  return TEACHING_STATIONS.has(station);
 };
 
 const isAdminRole = (emp: Employee) => {
-  const category = normalizeText(emp.categoryOfEmployment);
-  const rank = normalizeText(emp.currentRank);
   const station = normalizeText(emp.officialStation);
-
-  return (
-    textHasAny(category, ['admin', 'administrative', 'non-teaching', 'staff']) ||
-    textHasAny(rank, ['admin', 'administrative', 'staff']) ||
-    textHasAny(station, ['office', 'administration', 'administrative'])
-  );
+  if (!station) return false;
+  return !TEACHING_STATIONS.has(station);
 };
 
 const isReinstatedOrPartTime = (emp: Employee) => {
@@ -151,7 +148,19 @@ export const computeEmployeeScholarStats = (employees: Employee[]): ScholarStats
     totalCompleted: 0,
   };
 
-  employees.forEach((emp) => {
+  const uniqueEmployees = Array.from(
+    employees.reduce((map, emp) => {
+      const nameKey = normalizeText(emp.name);
+      const schoolingKey = normalizeText(emp.schoolingStatus);
+      const key = nameKey ? `${nameKey}::${schoolingKey}` : `${normalizeText(emp.no)}::${schoolingKey}`;
+      if (key && !map.has(key)) {
+        map.set(key, emp);
+      }
+      return map;
+    }, new Map<string, Employee>()).values()
+  );
+
+  uniqueEmployees.forEach((emp) => {
     const teaching = isTeachingRole(emp);
     const admin = !teaching && isAdminRole(emp);
     const ongoing = isOngoing(emp);

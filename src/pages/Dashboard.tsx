@@ -19,7 +19,7 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
         map.set(key, emp);
       }
       return map;
-    }, new Map<string, Employee>())
+    }, new Map<string, Employee>()).values()
   );
   const categoryData = toChartData(groupBy(uniqueByName, "categoryOfEmployment"));
 
