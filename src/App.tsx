@@ -1,17 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardPage } from "./pages/Dashboard";
 import { DirectoryPage } from "./pages/Directory";
 import { AnalyticsPage } from "./pages/Analytics";
 import { EmployeeDrawer } from "./components/ui/index";
-import { NAV_ITEMS, SAMPLE_DATA } from "./utils/index";
+import { NAV_ITEMS } from "./utils/index";
+import { useGoogleSheetsSync } from "./hooks/useGoogleSheetsSync";
 import { Employee } from "./types/employee";
 
 export default function App() {
   const [dark, setDark] = useState(false);
   const [page, setPage] = useState("dashboard");
-  const [employees, setEmployees] = useState<Employee[]>(SAMPLE_DATA);
   const [selected, setSelected] = useState<Employee | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Initialize Google Sheets sync
+  const { employees, loading, error } = useGoogleSheetsSync({
+    webAppUrl: import.meta.env.VITE_GOOGLE_SHEETS_URL || "",
+    defaultSheetName: "Masterlist",
+    onSuccess: (data) => console.log(`✓ Synced ${data.length} employees`),
+    onError: (err) => console.error(`✗ Sync failed: ${err}`),
+  });
+
+  // Fetch data on mount
+  useEffect(() => {
+    if (import.meta.env.VITE_GOOGLE_SHEETS_URL) {
+      // Initial sync happens automatically in useGoogleSheetsSync
+    } else {
+      console.warn("⚠️  VITE_GOOGLE_SHEETS_URL not configured in .env.local");
+    }
+  }, []);
 
   const theme = {
     "--bg": dark ? "#0f172a" : "#f8fafc",
@@ -58,7 +75,7 @@ export default function App() {
         <header style={{ background: "var(--card)", borderBottom: "1px solid var(--border)", padding: "12px 24px", display: "flex", alignItems: "center", gap: 16, position: "sticky", top: 0, zIndex: 10 }}>
           <button onClick={() => setSidebarOpen(o => !o)} style={{ background: "var(--bg)", border: "1px solid var(--border)", borderRadius: 8, width: 34, height: 34, cursor: "pointer", fontSize: 16, color: "var(--muted)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>☰</button>
           <div style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Caraga State University — Employee Management System</div>
-          <div style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>{employees.length} records loaded</div>
+          <div style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>{loading ? "Syncing..." : error ? "❌ Sync Error" : `${employees.length} records loaded`}</div>
         </header>
 
         {/* Content */}
