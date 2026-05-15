@@ -93,48 +93,35 @@ const textHasAny = (value: unknown, keywords: string[]) => {
   return keywords.some((keyword) => text.includes(keyword));
 };
 
-const TEACHING_STATIONS = new Set([
-  'ccis',
-  'caa',
-  'cofes',
-  'chass',
-  'cegs',
-  'ced',
-  'cmns'
-]);
-
 const isTeachingRole = (emp: Employee) => {
-  const station = normalizeText(emp.officialStation);
-  return TEACHING_STATIONS.has(station);
+  const category = normalizeText(emp.categoryOfEmployment);
+  return textHasAny(category, ['teaching']);
 };
 
 const isAdminRole = (emp: Employee) => {
-  const station = normalizeText(emp.officialStation);
-  if (!station) return false;
-  return !TEACHING_STATIONS.has(station);
+  const category = normalizeText(emp.categoryOfEmployment);
+  if (!category) return false;
+  return textHasAny(category, ['non-teaching', 'non teaching', 'admin', 'administrative']);
 };
 
 const isReinstatedOrPartTime = (emp: Employee) => {
   const reinstatement = normalizeText(emp.reinstatement);
   const status = normalizeText(emp.employmentStatus);
-  return (
-    textHasAny(reinstatement, ['yes', 'reinstated']) ||
-    textHasAny(status, ['part-time', 'part time', 'reinstated'])
-  );
+
+  if (reinstatement && reinstatement !== '0') return true;
+
+  return textHasAny(status, ['part-time', 'part time', 'reinstated']);
 };
 
 const isCompleted = (emp: Employee) => {
   const status = normalizeText(emp.schoolingStatus);
-  if (textHasAny(status, ['completed', 'graduated', 'finished'])) return true;
+  if (textHasAny(status, ['graduated', 'completed', 'finished'])) return true;
   return Boolean(normalizeText(emp.graduationDate));
 };
 
 const isOngoing = (emp: Employee) => {
   const status = normalizeText(emp.schoolingStatus);
-  if (textHasAny(status, ['ongoing', 'in progress', 'in-progress', 'currently enrolled', 'enrolled'])) {
-    return true;
-  }
-  return !isCompleted(emp) && Boolean(status);
+  return textHasAny(status, ['ongoing', 'on going', 'on-going', 'in progress', 'in-progress', 'currently enrolled', 'enrolled']);
 };
 
 export const computeEmployeeScholarStats = (employees: Employee[]): ScholarStats => {
@@ -148,40 +135,48 @@ export const computeEmployeeScholarStats = (employees: Employee[]): ScholarStats
     totalCompleted: 0,
   };
 
-  const uniqueEmployees = Array.from(
-    employees.reduce((map, emp) => {
-      const nameKey = normalizeText(emp.name);
-      const schoolingKey = normalizeText(emp.schoolingStatus);
-      const key = nameKey ? `${nameKey}::${schoolingKey}` : `${normalizeText(emp.no)}::${schoolingKey}`;
-      if (key && !map.has(key)) {
-        map.set(key, emp);
-      }
-      return map;
-    }, new Map<string, Employee>()).values()
-  );
+  const seenOngoingTeaching = new Set<string>();
+  const seenOngoingTeachingReinstated = new Set<string>();
+  const seenOngoingAdmin = new Set<string>();
+  const seenCompletedTeaching = new Set<string>();
+  const seenCompletedAdmin = new Set<string>();
 
-  uniqueEmployees.forEach((emp) => {
+  employees.forEach((emp) => {
     const teaching = isTeachingRole(emp);
     const admin = !teaching && isAdminRole(emp);
     const ongoing = isOngoing(emp);
     const completed = isCompleted(emp);
+    const nameKey = normalizeText(emp.name) || normalizeText(emp.no);
 
     if (ongoing) {
       if (teaching) {
-        stats.ongoingTeaching += 1;
-        if (isReinstatedOrPartTime(emp)) {
+        if (nameKey && !seenOngoingTeaching.has(nameKey)) {
+          seenOngoingTeaching.add(nameKey);
+          stats.ongoingTeaching += 1;
+        }
+        if (isReinstatedOrPartTime(emp) && nameKey && !seenOngoingTeachingReinstated.has(nameKey)) {
+          seenOngoingTeachingReinstated.add(nameKey);
           stats.ongoingTeachingReinstatedPartTime += 1;
         }
       } else if (admin) {
-        stats.ongoingAdmin += 1;
+        if (nameKey && !seenOngoingAdmin.has(nameKey)) {
+          seenOngoingAdmin.add(nameKey);
+          stats.ongoingAdmin += 1;
+        }
       }
     }
 
     if (completed) {
       if (teaching) {
-        stats.completedTeaching += 1;
+        if (nameKey && !seenCompletedTeaching.has(nameKey)) {
+          seenCompletedTeaching.add(nameKey);
+          stats.completedTeaching += 1;
+        }
       } else if (admin) {
-        stats.completedAdmin += 1;
+        if (nameKey && !seenCompletedAdmin.has(nameKey)) {
+          seenCompletedAdmin.add(nameKey);
+          stats.completedAdmin += 1;
+        }
       }
     }
   });

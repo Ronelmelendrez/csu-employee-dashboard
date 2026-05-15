@@ -49,7 +49,7 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
         <SummaryCard label="Connected with CSU" value={connected} icon="🏫" color="#0ea5e9" sub={`${((connected / total) * 100 || 0).toFixed(1)}% of total`} />
       </div>
 
-      <ScholarSummaryWidget />
+      <ScholarSummaryWidget employees={employees} />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20, marginBottom: 20 }}>
         <ChartCard title="Employment Status Distribution">

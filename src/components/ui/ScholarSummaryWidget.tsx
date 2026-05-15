@@ -1,10 +1,9 @@
 import { FiAward, FiBookOpen, FiBriefcase, FiCheckCircle } from 'react-icons/fi';
-import { useFilteredEmployees } from '../../hooks/useFilteredEmployees';
 import { computeEmployeeScholarStats } from '../../utils/analyticsHelpers';
+import { Employee } from '../../types/employee';
 import { StatCard } from './StatCard';
 
-export const ScholarSummaryWidget = () => {
-  const employees = useFilteredEmployees();
+export const ScholarSummaryWidget = ({ employees }: { employees: Employee[] }) => {
   const stats = computeEmployeeScholarStats(employees);
 
   return (
