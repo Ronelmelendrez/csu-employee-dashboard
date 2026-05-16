@@ -147,7 +147,7 @@ export default function EMSLanding() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: 'var(--font-sans)' }}>
+    <div className="min-h-screen bg-white overflow-x-hidden" style={{ fontFamily: 'var(--font-sans)' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&display=swap');
         :root {
@@ -310,7 +310,7 @@ export default function EMSLanding() {
           className={`transition-all duration-300 ${scrolled ? "scrolled-nav" : ""}`}
           style={{ background: scrolled ? "rgba(10,40,20,0.95)" : "transparent" }}
         >
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
             {/* Logo */}
             <a href="/" className="flex items-center gap-3">
               <div
@@ -355,7 +355,7 @@ export default function EMSLanding() {
 
           {/* Mobile menu */}
           {mobileMenuOpen && (
-            <div className="mobile-menu lg:hidden px-6 pb-6 pt-2 space-y-4">
+            <div className="mobile-menu lg:hidden px-4 sm:px-6 pb-5 sm:pb-6 pt-2 space-y-3 sm:space-y-4">
               {NAV_LINKS.map((l) => (
                 <a key={l.label} href={l.href} className="block text-white font-500 py-2" style={{ fontWeight: 500 }}>{l.label}</a>
               ))}
@@ -386,8 +386,8 @@ export default function EMSLanding() {
           </svg>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 pt-28 pb-20 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             <div>
               {/* Badge */}
               <div className="mb-6">
@@ -395,11 +395,11 @@ export default function EMSLanding() {
               </div>
 
               <h1
-                className="font-display text-white leading-tight mb-6"
+                className="font-display text-white leading-tight mb-4 sm:mb-6"
                 style={{
                   fontFamily: "var(--font-display)",
                   fontWeight: 500,
-                  fontSize: "clamp(40px, 5.5vw, 68px)",
+                  fontSize: "clamp(32px, 5.5vw, 68px)",
                   lineHeight: 1.08,
                   letterSpacing: "-0.02em",
                 }}
@@ -411,11 +411,11 @@ export default function EMSLanding() {
                 <br />
               </h1>
 
-              <p className="mb-10 max-w-lg" style={{ color: "rgba(255,255,255,0.72)", fontSize: "17px", lineHeight: "1.7", fontWeight: 400 }}>
+              <p className="mb-6 sm:mb-10 max-w-lg text-sm sm:text-base" style={{ color: "rgba(255,255,255,0.72)", lineHeight: "1.7", fontWeight: 400 }}>
                 The Employee Management System (EMS) of Caraga State University — streamline attendance tracking, manage leave requests, view performance reviews, and generate comprehensive reports in one secure platform.
               </p>
 
-              <div className="flex flex-wrap gap-4 mb-14">
+              <div className="flex flex-wrap gap-3 sm:gap-4 mb-8 sm:mb-14">
                 <a href="/dashboard" className="btn-primary">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
@@ -531,21 +531,21 @@ export default function EMSLanding() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section className="py-24" style={{ background: "var(--csu-cream)" }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <AnimSection className="text-center mb-16">
-            <span className="section-label">System Capabilities</span>
-            <div className="divider-leaf mx-auto my-4" />
-            <h2 className="font-display text-4xl sm:text-5xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "#0f2b18", letterSpacing: "-0.02em" }}>
+      <section className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <AnimSection className="text-center mb-12 sm:mb-16">
+            <span className="section-label text-xs sm:text-sm">System Capabilities</span>
+            <div className="divider-leaf mx-auto my-3 sm:my-4" />
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "#0f2b18", letterSpacing: "-0.02em" }}>
               Everything you need to<br />
               <em style={{ fontStyle: "italic", color: "var(--csu-green)" }}>manage your team</em>
             </h2>
-            <p className="mt-4 mx-auto max-w-xl" style={{ color: "#5a7a65", fontSize: "17px", lineHeight: "1.65" }}>
+            <p className="mt-3 sm:mt-4 mx-auto max-w-xl text-sm sm:text-base" style={{ color: "#5a7a65", lineHeight: "1.65" }}>
               Comprehensive HR and workforce management tools designed for the university environment.
             </p>
           </AnimSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {FEATURES.map((f, i) => (
               <AnimSection key={f.title} delay={i * 80}>
                 <div className="feature-card h-full">
@@ -565,18 +565,18 @@ export default function EMSLanding() {
       </section>
 
       {/* ── GETTING STARTED ── */}
-      <section id="getting-started" className="py-24" style={{ background: "white" }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <AnimSection className="text-center mb-16">
+      <section id="getting-started" className="py-12 sm:py-16 lg:py-24" style={{ background: "white" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <AnimSection className="text-center mb-10 sm:mb-16">
             <span className="section-label">Quick Start Guide</span>
             <div className="divider-leaf mx-auto my-4" />
-            <h2 className="font-display text-4xl sm:text-5xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "#0f2b18", letterSpacing: "-0.02em" }}>
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl" style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "#0f2b18", letterSpacing: "-0.02em" }}>
               Get started in<br />
               <em style={{ fontStyle: "italic", color: "var(--csu-green)" }}>three simple steps</em>
             </h2>
           </AnimSection>
 
-          <div className="grid md:grid-cols-3 gap-8 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 relative">
             {/* Connecting line */}
             <div
               className="hidden md:block absolute top-12 left-1/3 right-1/3 h-px"
@@ -584,9 +584,9 @@ export default function EMSLanding() {
             />
             {STEPS.map((s, i) => (
               <AnimSection key={s.num} delay={i * 100} className="relative">
-                <div className="p-8 rounded-3xl h-full" style={{ background: "var(--csu-green-xlight)", border: "1px solid #d6eadc" }}>
-                  <div className="flex items-start justify-between mb-4">
-                    <span className="step-number">{s.num}</span>
+                <div className="p-5 sm:p-8 rounded-3xl h-full" style={{ background: "var(--csu-green-xlight)", border: "1px solid #d6eadc" }}>
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <span className="step-number text-4xl sm:text-5xl">{s.num}</span>
                     <div
                       className="w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-700 text-white"
                       style={{ background: "var(--csu-green)", fontWeight: 700, flexShrink: 0 }}
@@ -594,8 +594,8 @@ export default function EMSLanding() {
                       {i + 1}
                     </div>
                   </div>
-                  <h3 className="text-xl mb-3" style={{ color: "#0f2b18", fontWeight: 700, lineHeight: 1.3 }}>{s.title}</h3>
-                  <p className="mb-5" style={{ color: "#5a7a65", fontSize: "15px", lineHeight: "1.65" }}>{s.desc}</p>
+                  <h3 className="text-lg sm:text-xl mb-2 sm:mb-3" style={{ color: "#0f2b18", fontWeight: 700, lineHeight: 1.3 }}>{s.title}</h3>
+                  <p className="mb-4 sm:mb-5 text-sm sm:text-base" style={{ color: "#5a7a65", lineHeight: "1.65" }}>{s.desc}</p>
                   <a
                     href={s.link}
                     className="inline-flex items-center gap-1.5 font-600 text-sm"
@@ -610,17 +610,17 @@ export default function EMSLanding() {
           </div>
 
           {/* Mobile access callout */}
-          <AnimSection className="mt-12">
-            <div className="rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-6" style={{ background: "var(--csu-green)", color: "white" }}>
-              <div className="w-16 h-16 rounded-3xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.15)" }}>
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
+          <AnimSection className="mt-8 sm:mt-12">
+            <div className="rounded-3xl p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-center gap-4 sm:gap-6" style={{ background: "var(--csu-green)", color: "white" }}>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-3xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.15)" }}>
+                <svg className="w-7 h-7 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18h3" />
                 </svg>
               </div>
               <div className="flex-1 text-center sm:text-left">
-                <p style={{ fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.65)", marginBottom: "6px" }}>Mobile Access</p>
-                <h3 className="text-2xl mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}>Manage anywhere, anytime</h3>
-                <p style={{ color: "rgba(255,255,255,0.72)", fontSize: "15px" }}>Access the Employee Management System on any device. Fully responsive design works on smartphones, tablets, and desktops for on-the-go workforce management.</p>
+                <p className="text-10px sm:text-xs" style={{ fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.65)", marginBottom: "4px" }}>Mobile Access</p>
+                <h3 className="text-xl sm:text-2xl mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}>Manage anywhere, anytime</h3>
+                <p className="text-sm sm:text-base" style={{ color: "rgba(255,255,255,0.72)" }}>Access the Employee Management System on any device. Fully responsive design works on smartphones, tablets, and desktops for on-the-go workforce management.</p>
               </div>
               <a href="/dashboard" className="btn-outline flex-shrink-0" style={{ fontSize: "13px", padding: "10px 18px" }}>
                 Launch EMS
@@ -631,27 +631,27 @@ export default function EMSLanding() {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section className="py-24" style={{ background: "var(--csu-cream)" }}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      <section className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <AnimSection>
             <div
-              className="rounded-3xl px-8 py-14 sm:py-20 relative overflow-hidden"
+              className="rounded-3xl px-5 sm:px-8 py-10 sm:py-14 lg:py-20 relative overflow-hidden"
               style={{ background: "var(--csu-green-dark)" }}
             >
               <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 70% 30%, rgba(200,153,26,0.1) 0%, transparent 60%)" }} />
               <div className="relative z-10">
-                <span className="badge" style={{ background: "rgba(200,153,26,0.2)", color: "#f0c842" }}>Ready to Begin?</span>
+                <span className="badge text-xs sm:text-sm" style={{ background: "rgba(200,153,26,0.2)", color: "#f0c842" }}>Ready to Begin?</span>
                 <h2
-                  className="mt-4 mb-5"
-                  style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(32px, 4vw, 52px)", color: "white", lineHeight: 1.1, letterSpacing: "-0.02em" }}
+                  className="mt-3 sm:mt-4 mb-4 sm:mb-5"
+                  style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(28px, 4vw, 52px)", color: "white", lineHeight: 1.1, letterSpacing: "-0.02em" }}
                 >
                   Streamline employee management<br />
                   <em style={{ fontStyle: "italic", color: "#f0c842" }}>at Caraga State University</em>
                 </h2>
-                <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "17px", maxWidth: "500px", margin: "0 auto 36px", lineHeight: "1.65" }}>
+                <p className="text-sm sm:text-base mb-6 sm:mb-9 mx-auto" style={{ color: "rgba(255,255,255,0.65)", maxWidth: "500px", margin: "0 auto", lineHeight: "1.65" }}>
                   From attendance to reports — access all your HR tools in one secure system. Log in with your CSU credentials to get started.
                 </p>
-                <div className="flex flex-wrap gap-4 justify-center">
+                <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
                   <a href="/dashboard" className="btn-primary" style={{ background: "white", color: "var(--csu-green-dark)" }}>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
                     Go to Dashboard
@@ -669,8 +669,8 @@ export default function EMSLanding() {
 
       {/* ── FOOTER ── */}
       <footer style={{ background: "#0a2410", color: "white" }}>
-        <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-16 pb-6 sm:pb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-12">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.12)" }}>
