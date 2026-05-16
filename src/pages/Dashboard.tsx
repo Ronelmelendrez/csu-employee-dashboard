@@ -45,22 +45,25 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
   const gradTrend = Object.entries(gradYears).sort((a, b) => Number(a[0]) - Number(b[0])).map(([year, count]) => ({ year, count }));
 
   return (
-    <div>
-      <div style={{ marginBottom: 32, paddingBottom: 24, borderBottom: "1px solid var(--border)" }}>
-        <h1 style={{ fontSize: 32, fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.5px" }}>Dashboard Overview</h1>
-        <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, fontWeight: 500 }}>Caraga State University · Real-time Employee Analytics</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="mb-10 pb-8 border-b border-gray-100">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-1.5 h-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600"></div>
+          <h1 className="text-5xl font-black bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 bg-clip-text text-transparent m-0 tracking-tight">Dashboard Overview</h1>
+        </div>
+        <p className="text-lg text-gray-600 mt-3 font-medium">Caraga State University • Real-time Employee Analytics & Insights</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 20, marginBottom: 32 }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
         <SummaryCard label="Total Employees" value={total} icon="👥" color="#6366f1" />
-        <SummaryCard label="Permanent" value={permanent} icon="✅" color="#10b981" sub={`${((permanent / total) * 100 || 0).toFixed(1)}% of total`} />
-        <SummaryCard label="Contractual / COS" value={contractual} icon="📋" color="#f59e0b" sub={`${((contractual / total) * 100 || 0).toFixed(1)}% of total`} />
-        <SummaryCard label="Connected with CSU" value={connected} icon="🏫" color="#0ea5e9" sub={`${((connected / total) * 100 || 0).toFixed(1)}% of total`} />
+        <SummaryCard label="Permanent Staff" value={permanent} icon="✅" color="#10b981" sub={`${((permanent / total) * 100 || 0).toFixed(1)}% of workforce`} />
+        <SummaryCard label="Contractual / COS" value={contractual} icon="📋" color="#f59e0b" sub={`${((contractual / total) * 100 || 0).toFixed(1)}% of workforce`} />
+        <SummaryCard label="Connected with CSU" value={connected} icon="🏫" color="#0ea5e9" sub={`${((connected / total) * 100 || 0).toFixed(1)}% still active`} />
       </div>
 
       <ScholarSummaryWidget employees={employees} />
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20, marginBottom: 20 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <ChartCard title="Employment Status Distribution">
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
@@ -85,7 +88,7 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
         </ChartCard>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard title="Category of Employment">
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>

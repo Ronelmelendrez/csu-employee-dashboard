@@ -5,6 +5,13 @@ import { Employee } from "../types/employee";
 import { isConnectedWithCSU } from "../utils/csuConnectionStatus";
 
 export function AnalyticsPage({ employees }: { employees: Employee[] }) {
+  const {
+    CSU_GREEN,
+    CSU_GOLD,
+  } = {
+    CSU_GREEN: "#006B3F",
+    CSU_GOLD: "#FFC72C",
+  };
   const fundingData = toChartData(groupBy(employees, "fundingSource"));
   const fundingTreemapData = [
     {
@@ -24,13 +31,16 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
   const reinstatementData = toChartData(groupBy(employees, "reinstatement"));
 
   return (
-    <div>
-      <div className="mb-8 pb-6 border-b border-gray-200">
-        <h1 className="text-4xl font-black text-gray-900 m-0 tracking-tight">Advanced Analytics</h1>
-        <p className="text-base text-gray-600 mt-2 font-medium">Deep insights into employee data and trends</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      <div className="mb-10 pb-8 border-b border-gray-100">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-1.5 h-8 rounded-full" style={{ background: CSU_GREEN }}></div>
+          <h1 className="text-5xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent m-0 tracking-tight">Advanced Analytics</h1>
+        </div>
+        <p className="text-lg text-gray-600 mt-3 font-medium leading-relaxed max-w-2xl">Comprehensive insights and deep analysis of employee data, trends, and organizational metrics</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ChartCard title="Funding Source Breakdown">
           <ResponsiveContainer width="100%" height={240}>
             <Treemap data={fundingTreemapData} dataKey="value" stroke="#fff" fill="#8884d8" isAnimationActive={true}>
@@ -102,16 +112,16 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
         </ChartCard>
 
         <ChartCard title="Summary Insights">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3.5">
             {[
               { label: "Most Common Rank", val: toChartData(groupBy(employees, "currentRank"))[0]?.name || "—" },
               { label: "Top Station", val: toChartData(groupBy(employees, "officialStation"))[0]?.name || "—" },
               { label: "Top Funding Source", val: toChartData(groupBy(employees, "fundingSource"))[0]?.name || "—" },
               { label: "Most Common Program", val: toChartData(groupBy(employees, "courseProgram")).filter(d => d.name !== "N/A")[0]?.name || "—" },
             ].map(({ label, val }) => (
-              <div key={label} className="flex justify-between items-center p-3.5 bg-gray-50 rounded-lg border border-gray-200">
-                <span className="text-xs text-gray-600 font-medium">{label}</span>
-                <span className="text-sm text-gray-900 font-bold">{val}</span>
+              <div key={label} className="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-gray-100 hover:border-blue-200 transition-all duration-200">
+                <span className="text-sm text-gray-600 font-semibold">{label}</span>
+                <span className="text-base text-gray-900 font-bold truncate ml-2">{val}</span>
               </div>
             ))}
           </div>
