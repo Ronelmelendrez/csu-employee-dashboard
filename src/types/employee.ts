@@ -1,3 +1,5 @@
+export type CSUConnectionStatus = 'YES' | 'NO' | 'DECEASED';
+
 export interface Employee {
   id: number;
   no?: string | number;
@@ -18,7 +20,7 @@ export interface Employee {
   schoolingStatus: string;
   graduationDate: string;
   clothingAllowanceAndPBB?: string;
-  connectedWithCSU: string;
+  connectedWithCSU: CSUConnectionStatus;
   returnService?: string;
   enrolled?: string;
   remarks?: string;
@@ -30,6 +32,7 @@ export interface EmployeeStats {
   contractual: number;
   permanent: number;
   connected: number;
+  deceased: number;
   byRank: Record<string, number>;
   byStation: Record<string, number>;
 }

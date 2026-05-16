@@ -10,6 +10,7 @@
 
 import * as XLSX from 'xlsx';
 import { Employee } from '../types/employee';
+import { normalizeCSUConnectionStatus } from './csuConnectionStatus';
 
 /**
  * Header variations/synonyms for each Employee field
@@ -646,6 +647,14 @@ export async function parseExcelToEmployees(file: File): Promise<Employee[]> {
               } else {
                 value = String(value).trim();
               }
+            } else if (fieldName === 'connectedWithCSU') {
+              // Normalize CSU connection status to standard values
+              const normalized = normalizeCSUConnectionStatus(value);
+              if (!normalized) {
+                // Skip this field if value cannot be normalized
+                continue;
+              }
+              value = normalized;
             } else if (fieldName === 'id') {
               // For ID field, use parsed number or auto-generated
               if (!value || value === '') {

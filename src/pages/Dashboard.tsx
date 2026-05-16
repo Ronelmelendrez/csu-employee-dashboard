@@ -3,19 +3,21 @@ import { ChartCard, SummaryCard } from '../components/ui/index';
 import { ScholarSummaryWidget } from '../components/ui/ScholarSummaryWidget';
 import { groupBy, toChartData, CHART_PALETTE } from '../utils/index';
 import { Employee } from '../types/employee';
+import { isConnectedWithCSU, isDeceased } from '../utils/csuConnectionStatus';
 
 export function DashboardPage({ employees }: { employees: Employee[] }) {
   const total = employees.length;
   const permanent = employees.filter(e => e.employmentStatus === "Permanent").length;
   const contractual = employees.filter(e => ["Contractual", "COS", "Job Order", "Casual"].includes(e.employmentStatus)).length;
-  const connected = employees.filter(e => e.connectedWithCSU === "Yes").length;
+  const connected = employees.filter(e => isConnectedWithCSU(e.connectedWithCSU)).length;
+  const deceased = employees.filter(e => isDeceased(e.connectedWithCSU)).length;
 
   // Debug logging
-  console.log(`Dashboard: Total employees=${total}, Connected=${connected}`);
+  console.log(`Dashboard: Total employees=${total}, Connected=${connected}, Deceased=${deceased}`);
   console.log(`Connected status values in data:`, employees.map(e => e.connectedWithCSU).slice(0, 10));
-  console.log(`Employees with connectedWithCSU="Yes":`, employees.filter(e => e.connectedWithCSU === "Yes").length);
-  console.log(`Employees with connectedWithCSU="No":`, employees.filter(e => e.connectedWithCSU === "No").length);
-  console.log(`Employees with connectedWithCSU="Deceased":`, employees.filter(e => e.connectedWithCSU === "Deceased").length);
+  console.log(`Employees with connectedWithCSU="YES":`, employees.filter(e => e.connectedWithCSU === "YES").length);
+  console.log(`Employees with connectedWithCSU="NO":`, employees.filter(e => e.connectedWithCSU === "NO").length);
+  console.log(`Employees with connectedWithCSU="DECEASED":`, employees.filter(e => e.connectedWithCSU === "DECEASED").length);
 
   const statusData = toChartData(groupBy(employees, "employmentStatus"));
   const stationData = toChartData(groupBy(employees, "officialStation")).slice(0, 8);

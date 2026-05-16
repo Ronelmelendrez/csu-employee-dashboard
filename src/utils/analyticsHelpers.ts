@@ -1,4 +1,5 @@
 import { Employee, EmployeeStats } from '../types/employee';
+import { isConnectedWithCSU, isDeceased } from './csuConnectionStatus';
 
 export const computeStats = (employees: Employee[]): EmployeeStats => {
   const stats: EmployeeStats = {
@@ -7,19 +8,22 @@ export const computeStats = (employees: Employee[]): EmployeeStats => {
     contractual: 0,
     permanent: 0,
     connected: 0,
+    deceased: 0,
     byRank: {},
     byStation: {},
   };
 
   employees.forEach((emp) => {
     // Active: still connected with CSU
-    if (emp.connectedWithCSU?.toLowerCase() === 'yes') stats.active++;
+    if (isConnectedWithCSU(emp.connectedWithCSU)) stats.active++;
     // Contractual
     if (emp.employmentStatus?.toLowerCase().includes('contractual')) stats.contractual++;
     // Permanent
     if (emp.employmentStatus?.toLowerCase() === 'permanent') stats.permanent++;
-    // Connected
-    if (emp.connectedWithCSU?.toLowerCase() === 'yes') stats.connected++;
+    // Connected (still connected with CSU)
+    if (isConnectedWithCSU(emp.connectedWithCSU)) stats.connected++;
+    // Deceased
+    if (isDeceased(emp.connectedWithCSU)) stats.deceased++;
     // By Rank
     const rank = emp.currentRank || 'Unknown';
     stats.byRank[rank] = (stats.byRank[rank] || 0) + 1;

@@ -88,8 +88,9 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
           </select>
           <select value={filters.connectedWithCSU} onChange={e => setFilter("connectedWithCSU", e.target.value)} style={selStyle}>
             <option value="">All Connected</option>
-            <option>Yes</option>
-            <option>No</option>
+            <option>YES</option>
+            <option>NO</option>
+            <option>DECEASED</option>
           </select>
         </div>
       </div>

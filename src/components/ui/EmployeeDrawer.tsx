@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Employee } from '../../types/employee';
 import { Badge } from './Badge';
-import { FiX, FiUser, FiBriefcase, FiCheckCircle } from 'react-icons/fi';
+import { FiX, FiUser, FiBriefcase, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+import { getCSUConnectionStatusLabel, isConnectedWithCSU, isDeceased } from '../../utils/csuConnectionStatus';
 
 interface EmployeeDrawerProps {
   employee: Employee | null;
@@ -21,7 +22,9 @@ export const EmployeeDrawer = ({ employee, isOpen, onClose }: EmployeeDrawerProp
   };
 
   const getConnectionVariant = (connected: string) => {
-    return connected.toLowerCase() === 'yes' ? 'success' : 'danger';
+    if (isConnectedWithCSU(connected as any)) return 'success';
+    if (isDeceased(connected as any)) return 'danger';
+    return 'warning';
   };
 
   return (
@@ -103,10 +106,13 @@ export const EmployeeDrawer = ({ employee, isOpen, onClose }: EmployeeDrawerProp
                     <p className="text-xs font-medium text-slate-500 dark:text-slate-400">CSU Connected</p>
                     <div className="mt-2 flex items-center gap-2">
                       <Badge variant={getConnectionVariant(employee.connectedWithCSU)}>
-                        {employee.connectedWithCSU || 'N/A'}
+                        {getCSUConnectionStatusLabel(employee.connectedWithCSU)}
                       </Badge>
-                      {employee.connectedWithCSU?.toLowerCase() === 'yes' && (
+                      {isConnectedWithCSU(employee.connectedWithCSU) && (
                         <FiCheckCircle className="text-emerald-500" size={18} />
+                      )}
+                      {isDeceased(employee.connectedWithCSU) && (
+                        <FiAlertCircle className="text-red-500" size={18} />
                       )}
                     </div>
                   </div>
