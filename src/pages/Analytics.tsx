@@ -2,6 +2,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { ChartCard } from "../components/ui/index";
 import { groupBy, toChartData, CHART_PALETTE } from "../utils/index";
 import { Employee } from "../types/employee";
+import { isConnectedWithCSU } from "../utils/csuConnectionStatus";
 
 export function AnalyticsPage({ employees }: { employees: Employee[] }) {
   const fundingData = toChartData(groupBy(employees, "fundingSource"));
@@ -17,8 +18,8 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
   const schoolingData = toChartData(groupBy(employees, "schoolingStatus"));
   const universityData = toChartData(groupBy(employees, "universityAttended")).slice(0, 8);
   const connectedData = [
-    { name: "Connected", value: employees.filter(e => e.connectedWithCSU === "Yes").length },
-    { name: "Not Connected", value: employees.filter(e => e.connectedWithCSU !== "Yes").length },
+    { name: "Connected", value: employees.filter(e => isConnectedWithCSU(e.connectedWithCSU)).length },
+    { name: "Not Connected", value: employees.filter(e => !isConnectedWithCSU(e.connectedWithCSU)).length },
   ];
   const reinstatementData = toChartData(groupBy(employees, "reinstatement"));
 
