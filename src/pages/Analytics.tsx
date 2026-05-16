@@ -25,12 +25,12 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 32, paddingBottom: 24, borderBottom: "1px solid var(--border)" }}>
-        <h1 style={{ fontSize: 32, fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.5px" }}>Advanced Analytics</h1>
-        <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, fontWeight: 500 }}>Deep insights into employee data and trends</p>
+      <div className="mb-8 pb-6 border-b border-gray-200">
+        <h1 className="text-4xl font-black text-gray-900 m-0 tracking-tight">Advanced Analytics</h1>
+        <p className="text-base text-gray-600 mt-2 font-medium">Deep insights into employee data and trends</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20 }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <ChartCard title="Funding Source Breakdown">
           <ResponsiveContainer width="100%" height={240}>
             <Treemap data={fundingTreemapData} dataKey="value" stroke="#fff" fill="#8884d8" isAnimationActive={true}>
@@ -102,16 +102,16 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
         </ChartCard>
 
         <ChartCard title="Summary Insights">
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="flex flex-col gap-3">
             {[
               { label: "Most Common Rank", val: toChartData(groupBy(employees, "currentRank"))[0]?.name || "—" },
               { label: "Top Station", val: toChartData(groupBy(employees, "officialStation"))[0]?.name || "—" },
               { label: "Top Funding Source", val: toChartData(groupBy(employees, "fundingSource"))[0]?.name || "—" },
               { label: "Most Common Program", val: toChartData(groupBy(employees, "courseProgram")).filter(d => d.name !== "N/A")[0]?.name || "—" },
             ].map(({ label, val }) => (
-              <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "var(--bg)", borderRadius: 10, border: "1px solid var(--border)" }}>
-                <span style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>{label}</span>
-                <span style={{ fontSize: 13, color: "var(--text)", fontWeight: 700 }}>{val}</span>
+              <div key={label} className="flex justify-between items-center p-3.5 bg-gray-50 rounded-lg border border-gray-200">
+                <span className="text-xs text-gray-600 font-medium">{label}</span>
+                <span className="text-sm text-gray-900 font-bold">{val}</span>
               </div>
             ))}
           </div>
