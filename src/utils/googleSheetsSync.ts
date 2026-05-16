@@ -7,6 +7,7 @@
  */
 
 import { Employee } from "../types/employee";
+import { normalizeCSUConnectionStatus } from "./csuConnectionStatus";
 
 export interface FetchResult {
   success: boolean;
@@ -65,9 +66,21 @@ function validateEmployee(obj: any): obj is Employee {
 function ensureEmployeeShape(obj: any): Employee {
   const employee: Partial<Employee> = obj || {};
 
+  // Normalize connectedWithCSU to valid CSUConnectionStatus value
+  let connectedStatus = employee.connectedWithCSU;
+  if (connectedStatus) {
+    const normalized = normalizeCSUConnectionStatus(connectedStatus);
+    connectedStatus = normalized || 'NO';
+  } else {
+    connectedStatus = 'NO';
+  }
+
   return {
     id: employee.id ?? 0,
     no: employee.no ?? "",
+    dateOfBirth: employee.dateOfBirth ?? "",
+    name: employee.name ?? "",
+    address: employee.address ?? "",
     currentRank: employee.currentRank ?? "",
     officialStation: employee.officialStation ?? "",
     categoryOfEmployment: employee.categoryOfEmployment ?? "",
@@ -76,10 +89,16 @@ function ensureEmployeeShape(obj: any): Employee {
     fundingSource: employee.fundingSource ?? "",
     universityAttended: employee.universityAttended ?? "",
     contractDuration: employee.contractDuration ?? "",
+    leaveOfAbsence: employee.leaveOfAbsence ?? "",
+    resolutionOfStudyLeave: employee.resolutionOfStudyLeave ?? "",
     reinstatement: employee.reinstatement ?? "",
     schoolingStatus: employee.schoolingStatus ?? "",
     graduationDate: employee.graduationDate ?? "",
-    connectedWithCSU: employee.connectedWithCSU ?? ""
+    clothingAllowanceAndPBB: employee.clothingAllowanceAndPBB ?? "",
+    connectedWithCSU: connectedStatus,
+    returnService: employee.returnService ?? "",
+    enrolled: employee.enrolled ?? "",
+    remarks: employee.remarks ?? ""
   };
 }
 
