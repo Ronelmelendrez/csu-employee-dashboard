@@ -8,6 +8,7 @@
 
 import { Employee } from "../types/employee";
 import { normalizeCSUConnectionStatus } from "./csuConnectionStatus";
+import { normalizeSchoolingStatus } from "./schoolingStatusNormalizer";
 
 export interface FetchResult {
   success: boolean;
@@ -75,6 +76,15 @@ function ensureEmployeeShape(obj: any): Employee {
     connectedStatus = 'NO';
   }
 
+  // Normalize schoolingStatus
+  let schoolingStatus = employee.schoolingStatus;
+  if (schoolingStatus) {
+    const normalized = normalizeSchoolingStatus(schoolingStatus);
+    schoolingStatus = normalized || "PENDING";
+  } else {
+    schoolingStatus = "PENDING";
+  }
+
   return {
     id: employee.id ?? 0,
     no: employee.no ?? "",
@@ -92,7 +102,7 @@ function ensureEmployeeShape(obj: any): Employee {
     leaveOfAbsence: employee.leaveOfAbsence ?? "",
     resolutionOfStudyLeave: employee.resolutionOfStudyLeave ?? "",
     reinstatement: employee.reinstatement ?? "",
-    schoolingStatus: employee.schoolingStatus ?? "",
+    schoolingStatus: schoolingStatus,
     graduationDate: employee.graduationDate ?? "",
     clothingAllowanceAndPBB: employee.clothingAllowanceAndPBB ?? "",
     connectedWithCSU: connectedStatus,

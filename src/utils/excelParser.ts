@@ -11,6 +11,7 @@
 import * as XLSX from 'xlsx';
 import { Employee } from '../types/employee';
 import { normalizeCSUConnectionStatus } from './csuConnectionStatus';
+import { normalizeSchoolingStatus } from './schoolingStatusNormalizer';
 
 /**
  * Header variations/synonyms for each Employee field
@@ -655,6 +656,9 @@ export async function parseExcelToEmployees(file: File): Promise<Employee[]> {
                 continue;
               }
               value = normalized;
+            } else if (fieldName === 'schoolingStatus') {
+              // Normalize schooling status to standard values
+              value = normalizeSchoolingStatus(value);
             } else if (fieldName === 'id') {
               // For ID field, use parsed number or auto-generated
               if (!value || value === '') {
