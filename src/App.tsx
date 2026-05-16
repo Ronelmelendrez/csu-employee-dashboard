@@ -63,7 +63,11 @@ export default function App() {
       {/* Show landing page without sidebar */}
       {page === "landing" && (
         <>
-          <EMSLanding />
+          <EMSLanding
+            onNavigateDashboard={() => setPage("dashboard")}
+            onNavigateDirectory={() => setPage("directory")}
+            onNavigateAnalytics={() => setPage("analytics")}
+          />
         </>
       )}
 

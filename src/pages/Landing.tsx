@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, ReactNode } from "react";
+import { useState, useEffect, useRef, ReactNode, MouseEvent } from "react";
 
 const NAV_LINKS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -136,9 +136,35 @@ function AnimSection({ children, className = "", delay = 0 }: AnimSectionProps) 
   );
 }
 
-export default function EMSLanding() {
+interface EMSLandingProps {
+  onNavigateDashboard: () => void;
+  onNavigateDirectory: () => void;
+  onNavigateAnalytics: () => void;
+}
+
+export default function EMSLanding({
+  onNavigateDashboard,
+  onNavigateDirectory,
+  onNavigateAnalytics,
+}: EMSLandingProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const handleNavClick = (href: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!href.startsWith("/")) return;
+    event.preventDefault();
+    if (href === "/dashboard") {
+      onNavigateDashboard();
+      return;
+    }
+    if (href === "/directory") {
+      onNavigateDirectory();
+      return;
+    }
+    if (href === "/analytics") {
+      onNavigateAnalytics();
+    }
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -330,13 +356,20 @@ export default function EMSLanding() {
             {/* Desktop nav */}
             <div className="hidden lg:flex items-center gap-8">
               {NAV_LINKS.map((l) => (
-                <a key={l.label} href={l.href} className="nav-link">{l.label}</a>
+                <a key={l.label} href={l.href} className="nav-link" onClick={handleNavClick(l.href)}>
+                  {l.label}
+                </a>
               ))}
             </div>
 
             {/* CTA */}
             <div className="hidden lg:flex items-center gap-3">
-              <a href="/dashboard" className="btn-outline" style={{ padding: "10px 22px", fontSize: "14px" }}>
+              <a
+                href="/dashboard"
+                className="btn-outline"
+                style={{ padding: "10px 22px", fontSize: "14px" }}
+                onClick={handleNavClick("/dashboard")}
+              >
                 Dashboard
               </a>
             </div>
@@ -357,9 +390,22 @@ export default function EMSLanding() {
           {mobileMenuOpen && (
             <div className="mobile-menu lg:hidden px-4 sm:px-6 pb-5 sm:pb-6 pt-2 space-y-3 sm:space-y-4">
               {NAV_LINKS.map((l) => (
-                <a key={l.label} href={l.href} className="block text-white font-500 py-2" style={{ fontWeight: 500 }}>{l.label}</a>
+                <a
+                  key={l.label}
+                  href={l.href}
+                  className="block text-white font-500 py-2"
+                  style={{ fontWeight: 500 }}
+                  onClick={handleNavClick(l.href)}
+                >
+                  {l.label}
+                </a>
               ))}
-              <a href="/dashboard" className="btn-primary block text-center mt-4" style={{ justifyContent: "center" }}>
+              <a
+                href="/dashboard"
+                className="btn-primary block text-center mt-4"
+                style={{ justifyContent: "center" }}
+                onClick={handleNavClick("/dashboard")}
+              >
                 Dashboard
               </a>
             </div>
@@ -416,7 +462,7 @@ export default function EMSLanding() {
               </p>
 
               <div className="flex flex-wrap gap-3 sm:gap-4 mb-8 sm:mb-14">
-                <a href="/dashboard" className="btn-primary">
+                <a href="/dashboard" className="btn-primary" onClick={handleNavClick("/dashboard")}>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                   </svg>
@@ -530,6 +576,7 @@ export default function EMSLanding() {
         </div>
       </section>
 
+      <div id="attendance" />
       {/* ── FEATURES ── */}
       <section className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -564,6 +611,7 @@ export default function EMSLanding() {
         </div>
       </section>
 
+      <div id="leave" />
       {/* ── GETTING STARTED ── */}
       <section id="getting-started" className="py-12 sm:py-16 lg:py-24" style={{ background: "white" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -600,6 +648,7 @@ export default function EMSLanding() {
                     href={s.link}
                     className="inline-flex items-center gap-1.5 font-600 text-sm"
                     style={{ color: "var(--csu-green)", fontWeight: 700, textDecoration: "none" }}
+                    onClick={handleNavClick(s.link)}
                   >
                     {s.linkLabel}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
@@ -622,7 +671,12 @@ export default function EMSLanding() {
                 <h3 className="text-xl sm:text-2xl mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}>Manage anywhere, anytime</h3>
                 <p className="text-sm sm:text-base" style={{ color: "rgba(255,255,255,0.72)" }}>Access the Employee Management System on any device. Fully responsive design works on smartphones, tablets, and desktops for on-the-go workforce management.</p>
               </div>
-              <a href="/dashboard" className="btn-outline flex-shrink-0" style={{ fontSize: "13px", padding: "10px 18px" }}>
+              <a
+                href="/dashboard"
+                className="btn-outline flex-shrink-0"
+                style={{ fontSize: "13px", padding: "10px 18px" }}
+                onClick={handleNavClick("/dashboard")}
+              >
                 Launch EMS
               </a>
             </div>
@@ -630,6 +684,7 @@ export default function EMSLanding() {
         </div>
       </section>
 
+      <div id="reports" />
       {/* ── CTA BANNER ── */}
       <section className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
@@ -652,7 +707,12 @@ export default function EMSLanding() {
                   From attendance to reports — access all your HR tools in one secure system. Log in with your CSU credentials to get started.
                 </p>
                 <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
-                  <a href="/dashboard" className="btn-primary" style={{ background: "white", color: "var(--csu-green-dark)" }}>
+                  <a
+                    href="/dashboard"
+                    className="btn-primary"
+                    style={{ background: "white", color: "var(--csu-green-dark)" }}
+                    onClick={handleNavClick("/dashboard")}
+                  >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
                     Go to Dashboard
                   </a>
@@ -700,7 +760,9 @@ export default function EMSLanding() {
                   { label: "Administration", href: "https://www.carsu.edu.ph/executive-committee/" },
                   { label: "Research & Development", href: "https://www.carsu.edu.ph/ovprdie/" },
                 ].map((l) => (
-                  <a key={l.label} href={l.href} className="block footer-link">{l.label}</a>
+                  <a key={l.label} href={l.href} className="block footer-link" onClick={handleNavClick(l.href)}>
+                    {l.label}
+                  </a>
                 ))}
               </div>
             </div>
