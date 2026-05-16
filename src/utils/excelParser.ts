@@ -191,13 +191,22 @@ export const headerVariations: Record<keyof Employee, string[]> = {
   ],
   connectedWithCSU: [
     'still connected with csu',
+    'still connected with csu?',
+    'still connected with csu as of 2025',
+    'still connected with csu as of',
     'connected with csu',
+    'connected with csu?',
+    'connected with csu as of',
+    'still connected',
     'connected',
     'csu connection',
     'affiliation',
     'csu affiliated',
     'csu affiliation',
-    'connected to csu'
+    'connected to csu',
+    'as of',
+    'as of 2025',
+    'status as of'
   ],
   returnService: [
     'return service',

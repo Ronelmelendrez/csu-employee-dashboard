@@ -1,10 +1,19 @@
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, PieChart, Pie } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, PieChart, Pie, Treemap } from "recharts";
 import { ChartCard } from "../components/ui/index";
 import { groupBy, toChartData, CHART_PALETTE } from "../utils/index";
 import { Employee } from "../types/employee";
 
 export function AnalyticsPage({ employees }: { employees: Employee[] }) {
   const fundingData = toChartData(groupBy(employees, "fundingSource"));
+  const fundingTreemapData = [
+    {
+      name: "Funding Sources",
+      children: fundingData.map(item => ({
+        name: item.name,
+        value: item.value
+      }))
+    }
+  ];
   const schoolingData = toChartData(groupBy(employees, "schoolingStatus"));
   const universityData = toChartData(groupBy(employees, "universityAttended")).slice(0, 8);
   const connectedData = [
@@ -23,15 +32,9 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20 }}>
         <ChartCard title="Funding Source Breakdown">
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={fundingData} layout="vertical" margin={{ left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis type="number" fontSize={10} tick={{ fill: "var(--muted)" }} />
-              <YAxis type="category" dataKey="name" fontSize={11} tick={{ fill: "var(--text)" }} width={80} />
-              <Tooltip />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                {fundingData.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
-              </Bar>
-            </BarChart>
+            <Treemap data={fundingTreemapData} dataKey="value" stroke="#fff" fill="#8884d8" aspect={4/3}>
+              {fundingTreemapData[0]?.children?.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
+            </Treemap>
           </ResponsiveContainer>
         </ChartCard>
 

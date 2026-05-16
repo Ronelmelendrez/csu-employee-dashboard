@@ -58,7 +58,7 @@ const COLUMN_MAPPING = {
   schoolingStatus: ["SCHOOLING STATUS", "schooling status", "SCHOOL STATUS", "school status", "education status", "EDUCATION STATUS"],
   graduationDate: ["GRADUATION DATE", "graduation date", "GRAD DATE", "grad date", "date graduated", "DATE GRADUATED"],
   clothingAllowanceAndPBB: ["CLOTHING ALLOWANCE AND PBB", "clothing allowance and pbb", "CLOTHING ALLOWANCE", "clothing allowance", "PBB", "pbb"],
-  connectedWithCSU: ["Still connected with CSU?", "Still connected with CSU? As of 2025", "CONNECTED WITH CSU", "connected with csu", "CONNECTED", "connected", "CSU CONNECTION", "csu connection", "Still connected", "still connected", "Connection", "CONNECTION", "connection", "Still Connected with CSU", "Still connected with CSU"],
+  connectedWithCSU: ["Still connected with CSU?", "Still connected with CSU? As of 2025", "Still connected with CSU?\nAs of 2025", "still connected with csu as of 2025", "still connected with csu as of", "still connected with csu?", "CONNECTED WITH CSU", "connected with csu", "CONNECTED", "connected", "CSU CONNECTION", "csu connection", "Still connected", "still connected", "Connection", "CONNECTION", "connection", "Still Connected with CSU", "Still connected with CSU", "As of 2025", "as of 2025"],
   returnService: ["RETURN SERVICE", "return service", "RETURN SVC", "return svc", "return", "RETURN"],
   enrolled: ["Enrolled?", "ENROLLED?", "enrolled?", "ENROLLED", "enrolled", "enrollment", "ENROLLMENT"],
   remarks: ["REMARKS", "remarks", "NOTES", "notes", "comment", "COMMENT", "comments", "COMMENTS"]
@@ -66,11 +66,15 @@ const COLUMN_MAPPING = {
 
 /**
  * Normalize a header string for matching
- * Converts to lowercase and trims whitespace
+ * Converts to lowercase, trims whitespace, and converts newlines to spaces
  */
 function normalizeHeader(header) {
   if (!header) return "";
-  return String(header).toLowerCase().trim();
+  return String(header)
+    .toLowerCase()
+    .trim()
+    .replace(/\n/g, ' ')
+    .replace(/\s+/g, ' ');
 }
 
 /**
