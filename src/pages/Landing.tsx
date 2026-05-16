@@ -504,7 +504,7 @@ export default function EMSLanding() {
 
                 {/* Floating notification badge */}
                 <div
-                  className="absolute -top-4 -right-4 rounded-2xl shadow-xl px-4 py-3 float-anim-2"
+                  className="absolute -top-4 right-2 sm:-right-4 rounded-2xl shadow-xl px-4 py-3 float-anim-2"
                   style={{ background: "white", border: "1px solid #e8f0eb", minWidth: 160 }}
                 >
                   <div className="flex items-center gap-2.5">

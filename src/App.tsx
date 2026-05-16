@@ -51,7 +51,15 @@ export default function App() {
   } as React.CSSProperties;
 
   return (
-    <div style={{ ...theme, minHeight: "100vh", background: "var(--bg)", fontFamily: "'DM Sans', 'Segoe UI', sans-serif", display: "flex" }}>
+    <div
+      style={{
+        ...theme,
+        minHeight: "100vh",
+        background: "var(--bg)",
+        fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
+        display: page === "landing" ? "block" : "flex",
+      }}
+    >
       {/* Show landing page without sidebar */}
       {page === "landing" && (
         <>
