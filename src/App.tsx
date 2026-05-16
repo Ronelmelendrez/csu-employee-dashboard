@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DashboardPage } from "./pages/Dashboard";
 import { DirectoryPage } from "./pages/Directory";
 import { AnalyticsPage } from "./pages/Analytics";
+import EMSLanding from "./pages/Landing";
 import { EmployeeDrawer } from "./components/ui/index";
 import { NAV_ITEMS } from "./utils/index";
 import { useGoogleSheetsSync } from "./hooks/useGoogleSheetsSync";
@@ -10,7 +11,7 @@ import { debugSheets } from "./utils/debug";
 
 export default function App() {
   const [dark, setDark] = useState(false);
-  const [page, setPage] = useState("dashboard");
+  const [page, setPage] = useState("landing");
   const [selected, setSelected] = useState<Employee | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -51,6 +52,16 @@ export default function App() {
 
   return (
     <div style={{ ...theme, minHeight: "100vh", background: "var(--bg)", fontFamily: "'DM Sans', 'Segoe UI', sans-serif", display: "flex" }}>
+      {/* Show landing page without sidebar */}
+      {page === "landing" && (
+        <>
+          <EMSLanding />
+        </>
+      )}
+
+      {/* Show dashboard with sidebar */}
+      {page !== "landing" && (
+        <>
       {/* Sidebar */}
       <aside style={{ width: sidebarOpen ? 220 : 64, background: "var(--sidebar)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", transition: "width 0.22s", flexShrink: 0, overflow: "hidden" }}>
         <div style={{ padding: "20px 16px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 10 }}>
@@ -61,6 +72,12 @@ export default function App() {
           </div>}
         </div>
         <nav style={{ flex: 1, padding: "12px 8px" }}>
+          {/* Home button */}
+          <button onClick={() => setPage("landing")}
+            style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "10px 12px", borderRadius: 10, border: "none", cursor: "pointer", background: page === "landing" ? "#10b98118" : "transparent", color: page === "landing" ? "#10b981" : "var(--muted)", fontWeight: page === "landing" ? 700 : 500, fontSize: 13, transition: "all 0.15s", marginBottom: 2, whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>🏠</span>
+            {sidebarOpen && "Home"}
+          </button>
           {NAV_ITEMS.map(item => (
             <button key={item.id} onClick={() => setPage(item.id)}
               style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "10px 12px", borderRadius: 10, border: "none", cursor: "pointer", background: page === item.id ? "#10b98118" : "transparent", color: page === item.id ? "#10b981" : "var(--muted)", fontWeight: page === item.id ? 700 : 500, fontSize: 13, transition: "all 0.15s", marginBottom: 2, whiteSpace: "nowrap" }}>
@@ -95,6 +112,8 @@ export default function App() {
       </div>
 
       {selected && <EmployeeDrawer employee={selected} onClose={() => setSelected(null)} />}
+        </>
+      )}
     </div>
   );
 }
