@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { StatusBadge } from "../components/ui/index";
 import { useDebounce, exportCSV } from "../utils/index";
 import { Employee } from "../types/employee";
+import { isConnectedWithCSU, isDeceased } from "../utils/csuConnectionStatus";
 
 export function DirectoryPage({ employees, onSelectEmployee }: { employees: Employee[]; onSelectEmployee: (emp: Employee) => void }) {
   const [search, setSearch] = useState("");
@@ -125,8 +126,8 @@ export function DirectoryPage({ employees, onSelectEmployee }: { employees: Empl
                   <td style={{ padding: "10px 14px", color: "var(--muted)" }}>{emp.courseProgram}</td>
                   <td style={{ padding: "10px 14px", color: "var(--muted)" }}>{emp.schoolingStatus}</td>
                   <td style={{ padding: "10px 14px" }}>
-                    <span style={{ color: emp.connectedWithCSU === "Yes" ? "#10b981" : emp.connectedWithCSU === "Deceased" ? "#8b5cf6" : "#ef4444", fontWeight: 700 }}>
-                      {emp.connectedWithCSU === "Yes" ? "✓" : emp.connectedWithCSU === "Deceased" ? "†" : "✗"}
+                    <span style={{ color: isConnectedWithCSU(emp.connectedWithCSU) ? "#10b981" : isDeceased(emp.connectedWithCSU) ? "#8b5cf6" : "#ef4444", fontWeight: 700 }}>
+                      {isConnectedWithCSU(emp.connectedWithCSU) ? "✓" : isDeceased(emp.connectedWithCSU) ? "†" : "✗"}
                     </span>
                   </td>
                 </tr>

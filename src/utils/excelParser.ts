@@ -694,7 +694,7 @@ export async function parseExcelToEmployees(file: File): Promise<Employee[]> {
             schoolingStatus: employee.schoolingStatus ?? '',
             graduationDate: employee.graduationDate ?? '',
             clothingAllowanceAndPBB: employee.clothingAllowanceAndPBB ?? '',
-            connectedWithCSU: employee.connectedWithCSU ?? '',
+            connectedWithCSU: (employee.connectedWithCSU as any) ?? 'NO',
             returnService: employee.returnService ?? '',
             enrolled: employee.enrolled ?? '',
             remarks: employee.remarks ?? ''
