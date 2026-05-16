@@ -46,12 +46,11 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
             <Treemap data={fundingTreemapData} dataKey="value" stroke="#fff" fill="#8884d8" isAnimationActive={true}>
               {fundingTreemapData[0]?.children?.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
               <Tooltip 
-                contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
                 content={({ payload }) => {
                   if (payload && payload.length > 0) {
                     const data = payload[0].payload;
                     return (
-                      <div>
+                      <div className="bg-white border border-gray-300 rounded-lg p-3 shadow-lg">
                         <div className="text-sm font-bold text-gray-900">{data.name}</div>
                         <div className="text-xs text-blue-600 font-semibold mt-1">{data.value} employees</div>
                       </div>

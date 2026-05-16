@@ -67,17 +67,9 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
         <ChartCard title="Employment Status Distribution">
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
-              <Pie data={statusData} cx="50%" cy="40%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={10}>
+              <Pie data={statusData} cx="50%" cy="50%" outerRadius={85} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={11}>
                 {statusData.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
               </Pie>
-              <Legend 
-                verticalAlign="bottom" 
-                height={36}
-                formatter={(value, entry: any) => (
-                  <span className="text-xs font-medium text-gray-700">{entry.payload.name}</span>
-                )}
-                wrapperStyle={{ paddingTop: "12px" }}
-              />
               <Tooltip 
                 contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px 12px" }}
                 formatter={(value: any) => [<span className="font-bold text-gray-900">{value}</span>, ""]}
