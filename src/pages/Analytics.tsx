@@ -33,8 +33,23 @@ export function AnalyticsPage({ employees }: { employees: Employee[] }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: 20 }}>
         <ChartCard title="Funding Source Breakdown">
           <ResponsiveContainer width="100%" height={240}>
-            <Treemap data={fundingTreemapData} dataKey="value" stroke="#fff" fill="#8884d8" aspect={4/3}>
+            <Treemap data={fundingTreemapData} dataKey="value" stroke="#fff" fill="#8884d8" isAnimationActive={true}>
               {fundingTreemapData[0]?.children?.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
+              <Tooltip 
+                contentStyle={{ backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: 6, padding: "8px 12px" }}
+                content={({ payload }) => {
+                  if (payload && payload.length > 0) {
+                    const data = payload[0].payload;
+                    return (
+                      <div style={{ fontSize: '12px', color: 'var(--text)' }}>
+                        <div style={{ fontWeight: 600, marginBottom: '4px' }}>{data.name}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--muted)' }}>Employees: {data.value}</div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
             </Treemap>
           </ResponsiveContainer>
         </ChartCard>
