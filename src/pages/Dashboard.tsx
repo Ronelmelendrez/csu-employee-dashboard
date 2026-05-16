@@ -1,4 +1,4 @@
-import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, Legend } from 'recharts';
 import { ChartCard, SummaryCard } from '../components/ui/index';
 import { ScholarSummaryWidget } from '../components/ui/ScholarSummaryWidget';
 import { groupBy, toChartData, CHART_PALETTE } from '../utils/index';
@@ -65,12 +65,23 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <ChartCard title="Employment Status Distribution">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={260}>
             <PieChart>
-              <Pie data={statusData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={11}>
+              <Pie data={statusData} cx="50%" cy="40%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={10}>
                 {statusData.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
               </Pie>
-              <Tooltip />
+              <Legend 
+                verticalAlign="bottom" 
+                height={36}
+                formatter={(value, entry: any) => (
+                  <span className="text-xs font-medium text-gray-700">{entry.payload.name}</span>
+                )}
+                wrapperStyle={{ paddingTop: "12px" }}
+              />
+              <Tooltip 
+                contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px 12px" }}
+                formatter={(value: any) => [<span className="font-bold text-gray-900">{value}</span>, ""]}
+              />
             </PieChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -81,7 +92,10 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="name" fontSize={10} tick={{ fill: "var(--muted)" }} />
               <YAxis fontSize={10} tick={{ fill: "var(--muted)" }} />
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px 12px" }}
+                formatter={(value: any) => [<span className="font-bold text-gray-900">{value} employees</span>, ""]}
+              />
               <Bar dataKey="value" fill="#6366f1" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -90,19 +104,30 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard title="Category of Employment">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={260}>
             <PieChart>
-              <Pie data={categoryData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} dataKey="value" label={({ name, value }) => `${name}: ${value}`} fontSize={11}>
+              <Pie data={categoryData} cx="50%" cy="40%" innerRadius={50} outerRadius={80} dataKey="value" label={({ name, value }) => `${name}: ${value}`} labelLine={false} fontSize={10}>
                 {categoryData.map((_, i) => <Cell key={i} fill={CHART_PALETTE[i % CHART_PALETTE.length]} />)}
               </Pie>
-              <Tooltip />
+              <Legend 
+                verticalAlign="bottom" 
+                height={36}
+                formatter={(value, entry: any) => (
+                  <span className="text-xs font-medium text-gray-700">{entry.payload.name}</span>
+                )}
+                wrapperStyle={{ paddingTop: "12px" }}
+              />
+              <Tooltip 
+                contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px 12px" }}
+                formatter={(value: any) => [<span className="font-bold text-gray-900">{value}</span>, ""]}
+              />
             </PieChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard title="Graduation Year Trend">
           {gradTrend.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={gradTrend} margin={{ left: -10 }}>
                 <defs>
                   <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
@@ -113,7 +138,10 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis dataKey="year" fontSize={10} tick={{ fill: "var(--muted)" }} />
                 <YAxis fontSize={10} tick={{ fill: "var(--muted)" }} />
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: "#fff", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px 12px" }}
+                  formatter={(value: any) => [<span className="font-bold text-gray-900">{value} graduates</span>, ""]}
+                />
                 <Area type="monotone" dataKey="count" stroke="#10b981" fill="url(#grad)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
