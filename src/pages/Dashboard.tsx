@@ -8,7 +8,7 @@ import { isConnectedWithCSU, isDeceased } from '../utils/csuConnectionStatus';
 export function DashboardPage({ employees }: { employees: Employee[] }) {
   const total = employees.length;
   const permanent = employees.filter(e => e.employmentStatus === "Permanent").length;
-  const contractual = employees.filter(e => ["Contractual", "COS", "Job Order", "Casual"].includes(e.employmentStatus)).length;
+  const nonPermanent = employees.filter(e => e.employmentStatus !== "Permanent").length;
   const connected = employees.filter(e => isConnectedWithCSU(e.connectedWithCSU)).length;
   const deceased = employees.filter(e => isDeceased(e.connectedWithCSU)).length;
 
@@ -57,7 +57,7 @@ export function DashboardPage({ employees }: { employees: Employee[] }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
         <SummaryCard label="Total Employees" value={total} icon="👥" color="#6366f1" />
         <SummaryCard label="Permanent Staff" value={permanent} icon="✅" color="#10b981" sub={`${((permanent / total) * 100 || 0).toFixed(1)}% of workforce`} />
-        <SummaryCard label="Contractual / COS" value={contractual} icon="📋" color="#f59e0b" sub={`${((contractual / total) * 100 || 0).toFixed(1)}% of workforce`} />
+        <SummaryCard label="Non-Permanent Staff" value={nonPermanent} icon="📋" color="#f59e0b" sub={`${((nonPermanent / total) * 100 || 0).toFixed(1)}% of workforce`} />
         <SummaryCard label="Connected with CSU" value={connected} icon="🏫" color="#0ea5e9" sub={`${((connected / total) * 100 || 0).toFixed(1)}% still active`} />
       </div>
 
