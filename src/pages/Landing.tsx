@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, ReactNode, MouseEvent } from "react";
 
 const NAV_LINKS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Employees", href: "/directory" },
+  { label: "Dashboard", href: "#dashboard" },
+  { label: "Employees", href: "#employees" },
   { label: "Attendance", href: "#attendance" },
   { label: "Leave", href: "#leave" },
-  { label: "Reports", href: "/analytics" },
+  { label: "Reports", href: "#reports" },
 ];
 
 const FEATURES = [
@@ -151,6 +151,14 @@ export default function EMSLanding({
   const [scrolled, setScrolled] = useState(false);
 
   const handleNavClick = (href: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    if (href.startsWith("#")) {
+      event.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      return;
+    }
     if (!href.startsWith("/")) return;
     event.preventDefault();
     if (href === "/dashboard") {
@@ -414,7 +422,7 @@ export default function EMSLanding({
       </nav>
 
       {/* ── HERO ── */}
-      <section className="hero-bg min-h-screen flex flex-col justify-center relative">
+      <section id="dashboard" className="hero-bg min-h-screen flex flex-col justify-center relative">
         <div className="hero-pattern" />
         <div className="hero-glow" />
         <div className="hero-glow-2" />
@@ -578,7 +586,7 @@ export default function EMSLanding({
 
       <div id="attendance" />
       {/* ── FEATURES ── */}
-      <section className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
+      <section id="employees" className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <AnimSection className="text-center mb-12 sm:mb-16">
             <span className="section-label text-xs sm:text-sm">System Capabilities</span>
