@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, ReactNode, MouseEvent } from "react";
 
 const NAV_LINKS = [
   { label: "Dashboard", href: "#dashboard" },
-  { label: "Employees", href: "#employees" },
   { label: "Attendance", href: "#attendance" },
+  { label: "Employees", href: "#employees" },
   { label: "Leave", href: "#leave" },
   { label: "Reports", href: "#reports" },
 ];
@@ -584,7 +584,40 @@ export default function EMSLanding({
         </div>
       </section>
 
-      <div id="attendance" />
+      {/* ── ATTENDANCE ── */}
+      <section id="attendance" className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <AnimSection className="text-center mb-10 sm:mb-14">
+            <span className="section-label">Attendance</span>
+            <div className="divider-leaf mx-auto my-3 sm:my-4" />
+            <h2
+              className="font-display text-3xl sm:text-4xl lg:text-5xl"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "#0f2b18", letterSpacing: "-0.02em" }}
+            >
+              Real-time presence,
+              <br />
+              <em style={{ fontStyle: "italic", color: "var(--csu-green)" }}>clear daily visibility</em>
+            </h2>
+            <p className="mt-3 sm:mt-4 mx-auto max-w-2xl text-sm sm:text-base" style={{ color: "#5a7a65", lineHeight: "1.7" }}>
+              Clock in/out tracking, attendance summaries, and automated reports help departments monitor workforce coverage with confidence.
+            </p>
+          </AnimSection>
+
+          <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+            {[
+              { title: "Daily Presence", desc: "Live status updates for every employee to support staffing decisions." },
+              { title: "Department Views", desc: "Filter by unit or office to quickly spot gaps and trends." },
+              { title: "Auto Reports", desc: "Generate summaries for supervisors without manual spreadsheets." },
+            ].map((item) => (
+              <div key={item.title} className="feature-card">
+                <h3 className="font-600 text-lg mb-2" style={{ color: "#0f2b18", fontWeight: 700 }}>{item.title}</h3>
+                <p style={{ color: "#5a7a65", fontSize: "15px", lineHeight: "1.65" }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── FEATURES ── */}
       <section id="employees" className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -692,7 +725,40 @@ export default function EMSLanding({
         </div>
       </section>
 
-      <div id="reports" />
+      {/* ── REPORTS ── */}
+      <section id="reports" className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <AnimSection className="text-center mb-10 sm:mb-14">
+            <span className="section-label">Reports</span>
+            <div className="divider-leaf mx-auto my-3 sm:my-4" />
+            <h2
+              className="font-display text-3xl sm:text-4xl lg:text-5xl"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "#0f2b18", letterSpacing: "-0.02em" }}
+            >
+              Insightful analytics for
+              <br />
+              <em style={{ fontStyle: "italic", color: "var(--csu-green)" }}>smarter HR decisions</em>
+            </h2>
+            <p className="mt-3 sm:mt-4 mx-auto max-w-2xl text-sm sm:text-base" style={{ color: "#5a7a65", lineHeight: "1.7" }}>
+              Turn employee data into actionable summaries across attendance, leave, and performance with ready-to-share dashboards.
+            </p>
+          </AnimSection>
+
+          <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+            {[
+              { title: "Custom Views", desc: "Build reports by department, date range, or employee group." },
+              { title: "Trend Tracking", desc: "Spot patterns in attendance, leave, and performance over time." },
+              { title: "Export Ready", desc: "Download CSVs for compliance and external reporting needs." },
+            ].map((item) => (
+              <div key={item.title} className="feature-card">
+                <h3 className="font-600 text-lg mb-2" style={{ color: "#0f2b18", fontWeight: 700 }}>{item.title}</h3>
+                <p style={{ color: "#5a7a65", fontSize: "15px", lineHeight: "1.65" }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA BANNER ── */}
       <section className="py-12 sm:py-16 lg:py-24" style={{ background: "var(--csu-cream)" }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
